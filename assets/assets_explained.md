@@ -21,9 +21,9 @@ Player's bubble bursts - bursting-bubble.png
 
 Fire bubble - fire-bubble-run.png and fire-bubble-idle.png
 
-Water bubble - TODO
+Water bubble - water-bubble-run.png and water-bubble-idle.png
 
-Plant bubble - TODO
+Plant bubble - plant-bubble-run.png and plant-bubble-idle.png
 
 ## Powers 
 Fire power - TODO

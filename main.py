@@ -31,6 +31,7 @@ if VERBOSE:
     print("starting random walk")
 cells_drawn = map_gen.random_walk()
 map_gen.add_portals(3)
+map_gen.add_portals_and_obstacles(3,3)
 if VERBOSE:
     print("finished random walk")
     print("filling empty cells")

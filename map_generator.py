@@ -336,4 +336,16 @@ class map_generator:
                     # top right bottom wall left floor
                     elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
                         self.map[i, j] = 16
+
+    def add_portals_and_obstacles(self, portal_no, obstacle_no):
+        total_count = portal_no + obstacle_no
+        interval = (MAP_SIZE - 4) / total_count  # -4 to skip borders and the start/finish rows
+
+        rows = [int(interval * i) + 1 for i in range(1, total_count + 1)]
+        rows = sorted(set(rows))  # unique row indices
+
+        for row in rows:
+            for col in range(1, self.cols - 1):  # Skip the borders
+                if self.map[col, row] >= 249:  # Floor tile
+                    self.map[col, row] = 246  # Portal tile
                     

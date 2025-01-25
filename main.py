@@ -39,15 +39,16 @@ if VERBOSE:
     print("finished filling empty cells")
 
 player = Player(1, 1, map_gen.map)
-tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28)
+tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, CELL_SIZE)
 
 sokoban_maps = []
 for i in range(3):
-    sokoban_maps.append(SokobanMap(canvas, i+1))
+    sokoban_maps.append(SokobanMap(canvas, i+1, WINDOW_HEIGHT))
 
 map_gen.draw_map()
 map_gen.build_the_wall()
 
+guard = False
 
 while not exit: 
     if state == 1:
@@ -56,6 +57,9 @@ while not exit:
                 exit = True
 
             if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    state = 0
+                    guard = True
                 if event.key == pygame.K_w:
                     sokoban_maps[current_portal_id].move_player((0, -1))
                 if event.key == pygame.K_s:
@@ -75,6 +79,7 @@ while not exit:
         pygame.display.update()
         clock.tick(30)
         continue
+
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: 
             exit = True
@@ -119,10 +124,15 @@ while not exit:
     pygame.draw.circle(canvas, (255, 0, 0), (player_pos[0]+CELL_SIZE//2, player_pos[1]+CELL_SIZE//2), PLAYER_SIZE)
     
     for i,portal in enumerate(map_gen.portal_pos):
+        current_portal_id = -1
         if portal[0] == player.x and portal[1] == player.y:
             current_portal_id = i
-            if not sokoban_maps[current_portal_id].finished:
+            if not sokoban_maps[current_portal_id].finished and not guard:
                 state = 1
+            break
+
+    if guard and current_portal_id == -1:
+        guard = False
 
     # if win overlay with gray and write win text
     if win:

@@ -5,13 +5,15 @@ Use stairs boing up from Set1.png for finish - Set1.png
 Game Over animation - TODO 
 Next Level animation - TODO
 
-## Player
-Player in bubble at rest - TODO
-Player in bubble moving - all 4 directions - TODO
-Player's bubble bursts and player dies - TODO 
-Player in fire bubble - TODO
-Player in water bubble - TODO
-Player in plant bubble - TODO
+## Player and bubble, to overlay in the game
+Player at rest - top of Prototype_Character.png
+Player moving - all 4 directions - middle of Prototype_Character.png
+Player dies - bottom of Prototype_Character.png
+Normal bubble - TODO
+Player's bubble bursts - TODO 
+Fire bubble - TODO
+Water bubble - TODO
+Plant bubble - TODO
 
 ## Powers 
 Fire power - TODO

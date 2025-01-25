@@ -48,3 +48,19 @@ WALL = {
     "wall bottom left top floor right":  [7, 8],
     "wall bottom right top floor left":  [5, 8],
 }
+
+# Types
+OBSTACLES = ["fire obstacle", "water obstacle", "plant obstacle"]
+PORTALS = ["water portal", "plant portal", "fire portal"]
+OBSTACLE_TO_PORTAL = {obstacle: portal for portal, obstacle in zip(PORTALS, OBSTACLES)}
+
+WATER_PORTAL = [11, 11]
+FIRE_PORTAL = [11, 11]
+PLANT_PORTAL = [11, 11]
+
+WATER_TILE = [11, 11]
+FIRE_TILE = [11, 11]
+PLANT_TILE = [11, 11]
+
+OBSTACLES_TILES = [FIRE_TILE, WATER_TILE, PLANT_TILE]
+PORTALS_TILES = [WATER_PORTAL, PLANT_PORTAL, FIRE_PORTAL]

@@ -337,15 +337,52 @@ class map_generator:
                     elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
                         self.map[i, j] = 16
 
-    def add_portals_and_obstacles(self, portal_no, obstacle_no):
-        total_count = portal_no + obstacle_no
+    def add_portals_and_obstacles(self, riddle_no):
+        total_count = riddle_no * 2
         interval = (MAP_SIZE - 4) / total_count  # -4 to skip borders and the start/finish rows
 
         rows = [int(interval * i) + 1 for i in range(1, total_count + 1)]
         rows = sorted(set(rows))  # unique row indices
 
+        portals = PORTALS[: riddle_no]
+        obstacles = OBSTACLES[: riddle_no]
+
+        riddle_order = []
+        first_portal = random.choice(portals)
+        riddle_order.append(first_portal)
+        portals.remove(first_portal)
+
+        for i in range(total_count - 1):
+            choose_portal = random.choice([True,False])
+            if choose_portal and portals:
+                portal = random.choice(portals)
+                riddle_order.append(portal)
+                portals.remove(portal)
+            elif not choose_portal and obstacles:
+                # Ensure the obstacle chosen has its corresponding portal already in riddle_order
+                eligible_obstacles = [obs for obs in obstacles if OBSTACLE_TO_PORTAL[obs] in riddle_order]
+                if eligible_obstacles:
+                    obstacle = random.choice(eligible_obstacles)
+                    riddle_order.append(obstacle)
+                    obstacles.remove(obstacle)
+                else:
+                    portal = random.choice(portals)
+                    riddle_order.append(portal)
+                    portals.remove(portal)
+            else:
+                thing = random.choice(portals + obstacles)
+                riddle_order.append(thing)
+                if thing in portals:
+                    portals.remove(thing)
+                else:
+                    obstacles.remove(thing)
+
+        print(riddle_order)
+
         for row in rows:
             for col in range(1, self.cols - 1):  # Skip the borders
                 if self.map[col, row] >= 249:  # Floor tile
                     self.map[col, row] = 246  # Portal tile
+
+        
                     

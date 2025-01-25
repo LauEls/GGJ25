@@ -221,4 +221,21 @@ class map_generator:
         self.evaluate_grid_values()
         self.write_grid_values()
 
+    
+    def draw_map(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.map[i, j] == 0:
+                    color = (0, 0, 0)
+                elif self.map[i, j] == 255:
+                    color = (255, 255, 255)
+                pos = self.get_map_pos(i, j)
+                pygame.draw.rect(self.canvas, color, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+
+        # color start and end
+        start_pos = self.get_map_pos(1, 1)
+        pygame.draw.rect(self.canvas, (0,0,255), pygame.Rect(start_pos[0], start_pos[1], self.cell_size, self.cell_size))
+        finish_pos = self.get_map_pos(self.rows-2, self.cols-2)
+        pygame.draw.rect(self.canvas, (0,255,0), pygame.Rect(finish_pos[0], finish_pos[1], self.cell_size, self.cell_size))
+
  

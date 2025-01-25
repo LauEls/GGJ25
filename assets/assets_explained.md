@@ -26,11 +26,11 @@ Water bubble - water-bubble-run.png and water-bubble-idle.png
 Plant bubble - plant-bubble-run.png and plant-bubble-idle.png
 
 ## Powers 
-Fire power - TODO
+Fire power - fire-power.png
 
-Water power - Potion3.png
+Water power - water-power.png
 
-Plant power - TODO
+Plant power - plant-power.png
 
 Fire obstacle - TODO
 

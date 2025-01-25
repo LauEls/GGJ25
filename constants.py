@@ -22,3 +22,17 @@ CELL_SIZE = 30
 PLAYER_SIZE = 10
 
 MAX_PLAN_STEPS = 10
+
+FLOOR_TILES = [[8,12],[9,12],[10,12],[8,13],[9,13],[10,13]]
+START_TILE = [11, 11]
+FINISH_TILE = [16, 11]
+WALL_TILE = [6, 10]
+
+WALL = {
+    "wall left and right": [6, 10],
+    "wall top and bottom, floor left and right": [4, 8],
+    "wall top and bottom, floor left": [5, 8],
+    "wall top and bottom, floor right": [7, 8],
+    "wall top floor left right bottom": [4, 9],
+    "wall top left floor bottom right": [11, 10]
+}

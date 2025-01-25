@@ -22,6 +22,7 @@ win = False
 if VERBOSE:
     print("initializing map generator")
 map_gen = map_generator(canvas, MAP_SIZE, MAP_SIZE, CELL_SIZE)
+map_gen.build_the_wall()
 
 if VERBOSE:
     print("starting random walk")
@@ -33,18 +34,21 @@ map_gen.draw_random_cells()
 if VERBOSE:
     print("finished filling empty cells")
 
-# player
 player = Player(1, 1, map_gen.map)
-
 tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28)
+
+map_gen.draw_map()
+map_gen.build_the_wall()
 
 
 while not exit: 
+    
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: 
             exit = True
         # check for wasd for movement
         if event.type == pygame.KEYDOWN:
+            print("key pressed", event.key)
             if event.key == pygame.K_w:
                 player.move(0, -1)
             if event.key == pygame.K_s:
@@ -56,28 +60,23 @@ while not exit:
 
     # check for winning condition
     if player.x == MAP_SIZE-2 and player.y == MAP_SIZE-2:
-        print("You won!")
         win = True
 
     # draw black background
     canvas.fill((0, 0, 0))
 
-    # tiles.draw(canvas)
+    # # draw the known player tiles
+    # for tile in player.known_tiles:
+    #     pos = map_gen.get_map_pos(tile.x, tile.y)
+    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
 
-    # draw map
-    # map_gen.draw_map()  
-    # draw the known player tiles
-    for tile in player.known_tiles:
-        pos = map_gen.get_map_pos(tile.x, tile.y)
-        if map_gen.map[tile.x][tile.y] == 0:
-            canvas.blit(tiles.get_tile(5, 12), pos)
-        else:
-            canvas.blit(tiles.get_tile(8, 12), pos)
-
-    # # draw start and end
-    # finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
-    # pygame.draw.rect(canvas, (0,255,0), pygame.Rect(finish_pos[0], finish_pos[1], CELL_SIZE, CELL_SIZE))
+    finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
+    canvas.blit(tiles.type_to_tile(248), finish_pos)
             
+    # starting tile
+    start_pos = map_gen.get_map_pos(1, 1)
+    canvas.blit(tiles.type_to_tile(247), start_pos)
+
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)
     pygame.draw.circle(canvas, (255, 0, 0), (player_pos[0]+CELL_SIZE//2, player_pos[1]+CELL_SIZE//2), PLAYER_SIZE)
@@ -85,7 +84,7 @@ while not exit:
     # if win overlay with gray and write win text
     if win:
         pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        util.write_text(canvas, "You won!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+        util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
     pygame.display.update()
     clock.tick(30)

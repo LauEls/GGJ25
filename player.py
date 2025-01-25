@@ -22,7 +22,7 @@ class Player:
         # check if move is valid i.e. target not a wall
         for tile in self.known_tiles:
             if tile.x == self.x + dx and tile.y == self.y + dy:
-                if tile.type == 0:
+                if tile.type < 246:
                     return
         
         self.x += dx

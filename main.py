@@ -37,9 +37,9 @@ if VERBOSE:
 player = Player(1, 1, map_gen.map)
 tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28)
 
-map_gen.draw_map()
-map_gen.build_the_wall()
 
+map_gen.build_the_wall()
+map_gen.draw_map()
 
 while not exit: 
     
@@ -65,10 +65,16 @@ while not exit:
     # draw black background
     canvas.fill((0, 0, 0))
 
-    # # draw the known player tiles
-    # for tile in player.known_tiles:
-    #     pos = map_gen.get_map_pos(tile.x, tile.y)
-    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+    # draw the known player tiles
+    for tile in player.known_tiles:
+        pos = map_gen.get_map_pos(tile.x, tile.y)
+        canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+
+    # # draw full map
+    # for i in range(MAP_SIZE):
+    #     for j in range(MAP_SIZE):
+    #         pos = map_gen.get_map_pos(i, j)
+    #         canvas.blit(tiles.type_to_tile(map_gen.map[i][j]), pos)
 
     finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
     canvas.blit(tiles.type_to_tile(248), finish_pos)

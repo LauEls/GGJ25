@@ -27,12 +27,23 @@ FLOOR_TILES = [[8,12],[9,12],[10,12],[8,13],[9,13],[10,13]]
 START_TILE = [11, 11]
 FINISH_TILE = [16, 11]
 WALL_TILE = [6, 10]
+VASE_TILE = [2, 12]
+FLOOR_TILE_START = 200
 
 WALL = {
-    "wall left and right": [6, 10],
-    "wall top and bottom, floor left and right": [4, 8],
-    "wall top and bottom, floor left": [5, 8],
-    "wall top and bottom, floor right": [7, 8],
+    "floor top left bottom right": [4, 10],
+    "wall right floor top left bottom": [5, 10],
+    "wall left floor top right bottom": [7, 10],
     "wall top floor left right bottom": [4, 9],
-    "wall top left floor bottom right": [11, 10]
+    "wall bottom floor left right top": [4, 7],    
+    "wall top right floor left bottom":  [12, 10],
+    "wall top bottom floor left right":  [4, 8],
+    "wall left right floor top bottom":  [6, 10],
+    "wall bottom right floor top left":  [12, 7],
+    "wall bottom left floor top right":  [15, 7],
+    "wall top left floor bottom right":  [15, 10],
+    "wall top left right floor bottom":  [13, 10],
+    "wall bottom left right floor top":  [14, 7],
+    "wall bottom left top floor right":  [7, 8],
+    "wall bottom right top floor left":  [5, 8],
 }

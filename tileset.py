@@ -31,17 +31,37 @@ class Tileset:
             
             # below 200 are wall tiles
             case 1:
-                return self.get_tile(WALL["wall left and right"][0], WALL["wall left and right"][1])
+                return self.get_tile(5, 12)
             case 2:
-                return self.get_tile(WALL["wall top and bottom, floor left and right"][0], WALL["wall top and bottom, floor left and right"][1])
+                return self.get_tile(WALL["floor top left bottom right"][0], WALL["floor top left bottom right"][1])
             case 3:
-                return self.get_tile(WALL["wall top and bottom, floor left"][0], WALL["wall top and bottom, floor left"][1])
+                return self.get_tile(WALL["wall right floor top left bottom"][0], WALL["wall right floor top left bottom"][1])
             case 4:
-                return self.get_tile(WALL["wall top and bottom, floor right"][0], WALL["wall top and bottom, floor right"][1])
+                return self.get_tile(WALL["wall left floor top right bottom"][0], WALL["wall left floor top right bottom"][1])
             case 5:
                 return self.get_tile(WALL["wall top floor left right bottom"][0], WALL["wall top floor left right bottom"][1])
             case 6:
+                return self.get_tile(WALL["wall bottom floor left right top"][0], WALL["wall bottom floor left right top"][1])
+            case 7:
+                return self.get_tile(WALL["wall top right floor left bottom"][0], WALL["wall top right floor left bottom"][1])
+            case 8:
+                return self.get_tile(WALL["wall top bottom floor left right"][0], WALL["wall top bottom floor left right"][1])
+            case 9:
+                return self.get_tile(WALL["wall left right floor top bottom"][0], WALL["wall left right floor top bottom"][1])
+            case 10:
+                return self.get_tile(WALL["wall bottom right floor top left"][0], WALL["wall bottom right floor top left"][1])
+            case 11:
+                return self.get_tile(WALL["wall bottom left floor top right"][0], WALL["wall bottom left floor top right"][1])
+            case 12:
                 return self.get_tile(WALL["wall top left floor bottom right"][0], WALL["wall top left floor bottom right"][1])
+            case 13:
+                return self.get_tile(WALL["wall top left right floor bottom"][0], WALL["wall top left right floor bottom"][1])
+            case 14:
+                return self.get_tile(WALL["wall bottom left right floor top"][0], WALL["wall bottom left right floor top"][1])
+            case 15:
+                return self.get_tile(WALL["wall bottom left top floor right"][0], WALL["wall bottom left top floor right"][1])
+            case 16:
+                return self.get_tile(WALL["wall bottom right top floor left"][0], WALL["wall bottom right top floor left"][1])
             
             # floor tiles and specials
             case 246:

@@ -11,7 +11,7 @@ Player moving - all 4 directions - middle of Prototype_Character.png
 Player dies - bottom of Prototype_Character.png
 Normal bubble - bubble-idle.png (when standing) and bubble-run.png (running)
 Player's bubble bursts - TODO 
-Fire bubble - TODO
+Fire bubble - fire-bubble-run.png and fire-bubble-idle.png
 Water bubble - TODO
 Plant bubble - TODO
 
@@ -20,7 +20,7 @@ Fire power - TODO
 Water power - Potion3.png
 Plant power - TODO
 Fire obstacle - TODO
-Water obstacle animattion - Water.png
+Water obstacle animattion - Water.png maybe something else, something better 
 Plant obstacle - TODO
 
 ## Blocks

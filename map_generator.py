@@ -11,7 +11,7 @@ class map_generator:
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
-        self.x_offset = 1980-cols*cell_size
+        self.x_offset = 0 # 1980-cols*cell_size
         self.empty_cells = rows * cols - 2
         self.grid_values = np.ones((rows, cols))*2
         self.map = np.ones((rows, cols))*-1
@@ -221,4 +221,12 @@ class map_generator:
         self.evaluate_grid_values()
         self.write_grid_values()
 
- 
+    def draw_map(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.map[i, j] == 0:
+                    color = (0, 0, 0)
+                elif self.map[i, j] == 255:
+                    color = (255, 255, 255)
+                pos = self.get_map_pos(i, j)
+                pygame.draw.rect(self.canvas, color, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))

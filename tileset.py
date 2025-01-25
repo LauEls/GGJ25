@@ -44,8 +44,8 @@ class Tileset:
                 return self.get_tile(WALL["wall top left floor bottom right"][0], WALL["wall top left floor bottom right"][1])
             
             # floor tiles and specials
-            case 246:
-                return self.get_tile(START_TILE[0], START_TILE[1])
+            case 246: # sokoban portal tile
+                return self.get_tile(PORTAL_TILE[0], PORTAL_TILE[1])
             case 247: # start tile
                 return self.get_tile(START_TILE[0], START_TILE[1])
             case 248: # finish tile

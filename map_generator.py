@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 import time
+from constants import *
 import random
 
 from util import write_text
@@ -149,7 +150,8 @@ class map_generator:
                 # current_pos = random.choice(path_pos)
                 continue
 
-            self.map[current_pos[0], current_pos[1]] = 255
+            floor_no = random.randint(0, len(FLOOR_TILES)-1)
+            self.map[current_pos[0], current_pos[1]] = 249 + floor_no
             path_pos.append(current_pos)
             pos = self.get_map_pos(current_pos[0], current_pos[1])
             pygame.draw.rect(self.canvas, (255,255,255), pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
@@ -166,7 +168,8 @@ class map_generator:
                     rnd = np.random.randint(0,3)
                     if rnd == -1:
                         color = (255, 255, 255)
-                        self.map[x, y] = 255
+                        floor_no = random.randint(0, len(FLOOR_TILES)-1)
+                        self.map[x, y] = 249 + floor_no
                     else:
                         color = (0, 0, 0)
                         self.map[x, y] = 0
@@ -189,7 +192,8 @@ class map_generator:
                     x = i
                     y = j
                     color = (255, 255, 255)
-                    self.map[x, y] = 255
+                    floor_no = random.randint(0, len(FLOOR_TILES)-1)
+                    self.map[x, y] = 249 + floor_no
                     important_cell = True
                     break
 
@@ -223,6 +227,7 @@ class map_generator:
 
     def draw_map(self):
         for i in range(self.rows):
+            print(self.map[i])
             for j in range(self.cols):
                 if self.map[i, j] == 0:
                     color = (0, 0, 0)
@@ -230,3 +235,32 @@ class map_generator:
                     color = (255, 255, 255)
                 pos = self.get_map_pos(i, j)
                 pygame.draw.rect(self.canvas, color, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+
+
+    def get_neighbors(self, x, y):
+
+        # scan the 4 neighbors of the current cell
+        neighbors = np.zeros(4)
+        if x > 0:
+            neighbors[0] = self.map[x-1, y]
+        if y < self.cols-1:
+            neighbors[1] = self.map[x, y+1]
+        if x < self.rows-1:
+            neighbors[2] = self.map[x+1, y]
+        if y > 0:
+            neighbors[3] = self.map[x, y-1]
+
+        return neighbors
+
+
+    def build_the_wall(self):
+        for i in range(self.rows):
+            for j in range(self.cols):
+                # check if wall
+                if self.map[i, j] == 0:
+                    neighbors = self.get_neighbors(i, j)
+                    # print(neighbors)
+                    # check if left and up are walls and right and down are not
+                    if neighbors[0] < 246 and neighbors[3] < 246 and neighbors[1] > 245 and neighbors[2] > 245:
+                        # print(f"i: {i}, j: {j} has neighbors: {neighbors}")
+                        self.map[i, j] = 6

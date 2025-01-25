@@ -240,15 +240,20 @@ class map_generator:
     def get_neighbors(self, x, y):
 
         # scan the 4 neighbors of the current cell
-        neighbors = np.zeros(4)
+        neighbors = {
+            "left": -1,
+            "right": -1,
+            "bottom": -1,
+            "top": -1
+        }
         if x > 0:
-            neighbors[0] = self.map[x-1, y]
+            neighbors["left"] = self.map[x-1, y]
         if y < self.cols-1:
-            neighbors[1] = self.map[x, y+1]
+            neighbors["bottom"] = self.map[x, y+1]
         if x < self.rows-1:
-            neighbors[2] = self.map[x+1, y]
+            neighbors["right"] = self.map[x+1, y]
         if y > 0:
-            neighbors[3] = self.map[x, y-1]
+            neighbors["top"] = self.map[x, y-1]
 
         return neighbors
 
@@ -259,8 +264,59 @@ class map_generator:
                 # check if wall
                 if self.map[i, j] == 0:
                     neighbors = self.get_neighbors(i, j)
-                    # print(neighbors)
-                    # check if left and up are walls and right and down are not
-                    if neighbors[0] < 246 and neighbors[3] < 246 and neighbors[1] > 245 and neighbors[2] > 245:
-                        # print(f"i: {i}, j: {j} has neighbors: {neighbors}")
+                    # if any of the neighbors is a floor tile, then its a wall
+                    if neighbors["left"] > 245 or neighbors["right"] > 245 or neighbors["top"] > 245 or neighbors["bottom"] > 245:
+                        self.map[i, j] = 1
+
+        
+        # go only through wall tiles
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.map[i, j] == 1:
+                    neighbors = self.get_neighbors(i, j)
+                    # all neighbors are floor
+                    if neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 2
+                    # only right is wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 3
+                    # only left is wall
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 4
+                    # only top is wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 5
+                    # only bottom is wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
                         self.map[i, j] = 6
+                    # top and right are walls
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 7
+                    # left and right floor, top and bottom wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 8
+                    # left right wall, top bottom floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 9
+                    # right and bottom wall, top and left floor
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 10
+                    # left bottom wall, right top floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 11
+                    # top left wall bottom right floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 12 
+                    # left right top wall, bottom floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 13
+                    # left right bottom wall, top floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 14
+                    # top left bottom wall right floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 15
+                    # top right bottom wall left floor
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 16
+                    

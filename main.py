@@ -2,6 +2,8 @@ import pygame
 import numpy as np
 from constants import *
 import util
+import sys
+from tileset import Tileset
 from map_generator import map_generator
 from player import Player
 
@@ -34,6 +36,9 @@ if VERBOSE:
 # player
 player = Player(1, 1, map_gen.map)
 
+tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28)
+
+
 while not exit: 
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT: 
@@ -57,16 +62,21 @@ while not exit:
     # draw black background
     canvas.fill((0, 0, 0))
 
+    # tiles.draw(canvas)
+
     # draw map
     # map_gen.draw_map()  
     # draw the known player tiles
     for tile in player.known_tiles:
         pos = map_gen.get_map_pos(tile.x, tile.y)
-        pygame.draw.rect(canvas, (map_gen.map[tile.x][tile.y], map_gen.map[tile.x][tile.y], map_gen.map[tile.x][tile.y]), pygame.Rect(pos[0], pos[1], CELL_SIZE, CELL_SIZE))
+        if map_gen.map[tile.x][tile.y] == 0:
+            canvas.blit(tiles.get_tile(5, 12), pos)
+        else:
+            canvas.blit(tiles.get_tile(8, 12), pos)
 
-    # draw start and end
-    finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
-    pygame.draw.rect(canvas, (0,255,0), pygame.Rect(finish_pos[0], finish_pos[1], CELL_SIZE, CELL_SIZE))
+    # # draw start and end
+    # finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
+    # pygame.draw.rect(canvas, (0,255,0), pygame.Rect(finish_pos[0], finish_pos[1], CELL_SIZE, CELL_SIZE))
             
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)
@@ -79,3 +89,6 @@ while not exit:
 
     pygame.display.update()
     clock.tick(30)
+
+pygame.quit()
+sys.exit()

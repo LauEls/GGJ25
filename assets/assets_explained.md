@@ -32,11 +32,11 @@ Water power - water-power.png
 
 Plant power - plant-power.png
 
-Fire obstacle - TODO
+Fire obstacle, magma - fire_obstacle.png
 
-Water obstacle animattion - Water.png maybe something else, something better 
+Water obstacle animattion - water_obstacle.png 
 
-Plant obstacle - TODO
+Plant obstacle, mushrooms - plant_obstacle.png
 
 ## Blocks
 Block going down animation - Set3.5.png

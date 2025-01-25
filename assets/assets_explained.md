@@ -9,7 +9,7 @@ Next Level animation - TODO
 Player at rest - top of Prototype_Character.png
 Player moving - all 4 directions - middle of Prototype_Character.png
 Player dies - bottom of Prototype_Character.png
-Normal bubble - bubble-idle.png (when standing) 
+Normal bubble - bubble-idle.png (when standing) and bubble-run.png (running)
 Player's bubble bursts - TODO 
 Fire bubble - TODO
 Water bubble - TODO

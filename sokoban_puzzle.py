@@ -26,7 +26,7 @@ PLAYER_COLOR = (0, 0, 255)
 EMPTY_COLOR = (255, 255, 255)
 
 class SokobanMap:
-    def __init__(self, canvas, map_id, window_height=1200, level=1):
+    def __init__(self, canvas, map_id, type, window_height=1200, level=1):
         # self.map = []
         self.canvas = canvas
         self.load_map(map_id,level)
@@ -35,6 +35,7 @@ class SokobanMap:
         self.cells = len(self.map)
         self.cell_size = int(window_height / self.cells)
         self.finished = False
+        self.portal_type = type
         self.tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size)
         self.tiles_small = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size//3*2)
 
@@ -68,7 +69,12 @@ class SokobanMap:
         return (x*self.cell_size, y*self.cell_size)
 
     def render_map(self):
-        self.canvas.fill((0, 0, 0))
+        if self.portal_type == "fire portal":
+            self.canvas.fill((255, 0, 0))
+        elif self.portal_type == "plant portal":
+            self.canvas.fill((0, 255, 0))
+        elif self.portal_type == "water portal":
+            self.canvas.fill((0, 0, 255))
         self.box_pos = []
         # self.box_on_goal_cntr = 0
         self.box_cntr = 0

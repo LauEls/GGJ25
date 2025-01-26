@@ -81,12 +81,18 @@ while not exit:
             state = 0
             if sokoban_maps[current_portal_id].portal_type == "fire portal":
                 player.fire_power = True
+                player.water_power = False
+                player.plant_power = False
                 print("fire power gained")
             elif sokoban_maps[current_portal_id].portal_type == "plant portal":
                 player.plant_power = True
+                player.fire_power = False
+                player.water_power = False
                 print("plant power gained")
             elif sokoban_maps[current_portal_id].portal_type == "water portal":
                 player.water_power = True
+                player.fire_power = False
+                player.plant_power = False
                 print("water power gained")
 
         pygame.display.update()

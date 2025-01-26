@@ -15,7 +15,7 @@ from player import Player
 pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
 
 def init_map():
-    global clock, exit, win, game_over, player, tiles, map_gen, guard, sokoban_maps
+    global clock, exit, win, game_over, player, tiles, map_gen, guard, sokoban_maps, start_ticks, time_budget
 
     canvas.fill((255, 0, 0))
   
@@ -62,6 +62,23 @@ def init_map():
     map_gen.build_the_wall()
     guard = False
 
+
+    start_ticks = pygame.time.get_ticks()
+    time_budget = 5*60
+
+def render_time():
+    util.write_text(canvas, f"Level: {level}", "white", "comic sans", 40, WINDOW_WIDTH-110, 25)
+    time_left = time_budget - (pygame.time.get_ticks() - start_ticks)//1000
+    time_left_min = time_left//60
+    time_left_sec = time_left-time_left_min*60
+    if time_left_sec < 10:
+        time_left_sec = f"0{time_left_sec}"
+    util.write_text(canvas, f"Time: {time_left_min}:{time_left_sec}", "white", "comic sans", 40, WINDOW_WIDTH-90, 65)
+
+def render_help_text():
+    # util.write_text(canvas, "WASD to move", "white", "comic sans", 20, WINDOW_WIDTH//2, WINDOW_HEIGHT-50)
+    util.write_text(canvas, "R to reset", "white", "comic sans", 40, 90, WINDOW_HEIGHT-50)
+    util.write_text(canvas, "ESC to exit", "white", "comic sans", 40, 95, WINDOW_HEIGHT-20)
 
 pygame.init() 
 pygame.mixer.init()
@@ -230,6 +247,8 @@ while not exit:
                         walking_sound.play()
                         walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((1, 0))
+                if event.key == pygame.K_r:
+                    sokoban_maps[current_portal_id].reset_map()
 
         sokoban_maps[current_portal_id].render_map()
 
@@ -251,7 +270,10 @@ while not exit:
                 player.fire_power = False
                 player.plant_power = False
                 print("water power gained")
+            time_budget += 60
 
+        render_time()
+        render_help_text()
         pygame.display.update()
         clock.tick(30)
         continue
@@ -369,6 +391,9 @@ while not exit:
     if guard and current_portal_id == -1:
         guard = False
 
+    render_time()
+
+
     # if win overlay with gray and write win text
     if win:
         level += 1
@@ -377,7 +402,7 @@ while not exit:
             util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
             util.write_text(canvas, "Brace yourself for the next challenge!", "white", "comic sans", 20, WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 50)
             pygame.display.update()
-            time.sleep(5)
+            pygame.time.wait(3000)
             init_map()
             continue
         else:

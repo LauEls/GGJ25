@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from constants import *
 import util
+import time
 import math
 import random
 import sys
@@ -191,13 +192,17 @@ while not exit:
 
     # if win overlay with gray and write win text
     if win:
-        pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
         level += 1
-        init_map()
-        if level > 3:
+        if level <= 3:
+            pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+            util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+            pygame.display.update()
+            time.sleep(3)
+            init_map()
+        else:
             pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
             util.write_text(canvas, "You Won!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+
 
     pygame.display.update()
     clock.tick(30)

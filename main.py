@@ -64,7 +64,14 @@ def init_map():
 
 
     start_ticks = pygame.time.get_ticks()
-    time_budget = 10#5*60
+    time_budget = 5*60
+
+    pygame.mixer.music.stop()
+    # play selection sound once without looop
+    selection_sound.play()
+
+    pygame.mixer.music.load('assets/sounds/level.mp3')
+    pygame.mixer.music.play(-1)
 
 def render_time():
     global game_over, state
@@ -102,6 +109,11 @@ transition_sound_timer = 0
 transition_exit_sound = pygame.mixer.Sound('assets/sounds/transition_exit.mp3')
 transition_exit_sound.set_volume(0.2)
 transition_exit_sound_timer = 0
+vicotry_sound = pygame.mixer.Sound('assets/sounds/victory.mp3')
+victory_sound_timer = 0
+try_again_sound = pygame.mixer.Sound('assets/sounds/trayAgain.mp3')
+try_again_sound_timer = 0
+
 
 
 def main_menu(clock, canvas, selection_sound, map_gen):
@@ -189,12 +201,7 @@ def main_menu(clock, canvas, selection_sound, map_gen):
         pygame.display.update()
         clock.tick(30)
 
-    pygame.mixer.music.stop()
-    # play selection sound once without looop
-    selection_sound.play()
-
-    pygame.mixer.music.load('assets/sounds/level.mp3')
-    pygame.mixer.music.play(-1)
+    
 
 
 
@@ -411,6 +418,14 @@ while not exit:
             init_map()
             continue
         else:
+            
+            # pygame.mixer.music.stop()
+            # pygame.mixer.music.load('assets/sounds/victory.mp3')
+            # pygame.mixer.music.play(-1)
+            pygame.mixer.music.stop()
+            if victory_sound_timer == 0:
+                vicotry_sound.play()
+                victory_sound_timer = 1
             pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
              # game title with glowing torch animations on the sides
             util.write_text(canvas, "Bubble Bound", "white", "comic sans", 68, WINDOW_WIDTH//2, 210)
@@ -442,6 +457,10 @@ while not exit:
     
     # if game over overlay with red and write game over text
     if game_over:
+        pygame.mixer.music.stop()
+        if try_again_sound_timer == 0:
+            try_again_sound.play()
+            try_again_sound_timer = 1
         pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
         game_over_image = pygame.image.load('assets/game_over.jpg')
         game_over_image_rect = game_over_image.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))

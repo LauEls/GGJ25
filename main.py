@@ -30,8 +30,6 @@ map_gen.build_the_wall()
 if VERBOSE:
     print("starting random walk")
 cells_drawn = map_gen.random_walk()
-map_gen.add_portals(3)
-map_gen.add_portals_and_obstacles(3)
 if VERBOSE:
     print("finished random walk")
     print("filling empty cells")
@@ -45,6 +43,9 @@ tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28)
 sokoban_maps = []
 for i in range(3):
     sokoban_maps.append(SokobanMap(canvas, i+1))
+
+# Generate portals and obstacles
+map_gen.add_portals_and_obstacles(3)
 
 map_gen.draw_map()
 map_gen.build_the_wall()
@@ -114,6 +115,9 @@ while not exit:
     # starting tile
     start_pos = map_gen.get_map_pos(1, 1)
     canvas.blit(tiles.type_to_tile(247), start_pos)
+
+    # draw portals and obstacles
+    map_gen.draw_portals_and_obstacles()
 
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)

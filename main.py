@@ -15,6 +15,11 @@ pygame.mixer.init()
 pygame.mixer.music.load('assets/sounds/level.mp3')
 pygame.mixer.music.play(-1)
 
+# walking sound
+walking_sound_timer = 0
+walking_sound = pygame.mixer.Sound('assets/sounds/walk.mp3')
+walking_sound.set_volume(0.05)
+
 state = 0
 
 # CREATING CANVAS 
@@ -63,6 +68,12 @@ guard = False
 map_gen.build_the_wall()
 
 while not exit: 
+
+    # walking sound
+    if walking_sound_timer > 0:
+        walking_sound_timer -= 1
+
+
     if state == 1:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
@@ -73,12 +84,24 @@ while not exit:
                     state = 0
                     guard = True
                 if event.key == pygame.K_w:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((0, -1))
                 if event.key == pygame.K_s:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((0, 1))
                 if event.key == pygame.K_a:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((-1, 0))
                 if event.key == pygame.K_d:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((1, 0))
 
         sokoban_maps[current_portal_id].render_map()
@@ -98,12 +121,24 @@ while not exit:
         # check for wasd for movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(0, -1)
             if event.key == pygame.K_s:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(0, 1)
             if event.key == pygame.K_a:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(-1, 0)
             if event.key == pygame.K_d:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(1, 0)
 
     # check for winning condition

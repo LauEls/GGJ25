@@ -115,6 +115,54 @@ try_again_sound = pygame.mixer.Sound('assets/sounds/trayAgain.mp3')
 try_again_sound_timer = 0
 
 
+# load character sprites for animations
+character_run = pygame.image.load("assets/character/run.png")
+character_run_sprites = []
+for i in range(4):
+    character_run_sprites.append(pygame.transform.scale(character_run.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
+
+character_idle = pygame.image.load("assets/character/idle.png")
+character_idle_sprites = []
+for i in range(2):
+    character_idle_sprites.append(pygame.transform.scale(character_idle.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
+                                  
+character_die = pygame.image.load("assets/character/die.png")
+character_die_sprites = []
+for i in range(3):
+    character_die_sprites.append(pygame.transform.scale(character_die.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
+
+character_bubble = pygame.image.load("assets/bubble_idle.png")
+# split into the 2 sprites for the animation
+character_bubble_sprites = []
+for i in range(2):
+    character_bubble_sprites.append(pygame.transform.scale(character_bubble.subsurface((i*16, 0, 16, 16)), (CELL_SIZE, CELL_SIZE)))
+
+        
+
+# load character sprites for animations
+character_run = pygame.image.load("assets/character/run.png")
+character_run_sprites = []
+for i in range(4):
+    character_run_sprites.append(pygame.transform.scale(character_run.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
+
+character_idle = pygame.image.load("assets/character/idle.png")
+character_idle_sprites = []
+for i in range(2):
+    character_idle_sprites.append(pygame.transform.scale(character_idle.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
+                                  
+character_die = pygame.image.load("assets/character/die.png")
+character_die_sprites = []
+for i in range(3):
+    character_die_sprites.append(pygame.transform.scale(character_die.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
+
+character_bubble = pygame.image.load("assets/bubble_idle.png")
+# split into the 2 sprites for the animation
+character_bubble_sprites = []
+for i in range(2):
+    character_bubble_sprites.append(pygame.transform.scale(character_bubble.subsurface((i*16, 0, 16, 16)), (CELL_SIZE, CELL_SIZE)))
+
+        
+
 
 def main_menu(clock, canvas, selection_sound, map_gen):
     starting_game = False
@@ -165,13 +213,11 @@ def main_menu(clock, canvas, selection_sound, map_gen):
 
         
         # bubble is a sequence of tiles in an image with 16x16 size
-        # character_idle = pygame.image.load("assets/character/spr_blob.png")
-        # split into the 2 sprites for the animation
-        # character_idle_sprites = []
-        # for i in range(6):
-        #     character_idle_sprites.append(pygame.transform.scale(character_idle.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*1.3), int(CELL_SIZE*1.3))))
-        # draw torch as an animated sprite
-        # canvas.blit(character_idle_sprites[(pygame.time.get_ticks())//600 % len(character_idle_sprites)], (WINDOW_WIDTH//2-CELL_SIZE+12, 512))
+        character_run = pygame.image.load("assets/character/run.png")
+        character_run_sprites = []
+        for i in range(4):
+            character_run_sprites.append(pygame.transform.scale(character_run.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*1.3), int(CELL_SIZE*1.3))))
+        canvas.blit(character_run_sprites[(pygame.time.get_ticks())//300 % len(character_run_sprites)], (WINDOW_WIDTH//2-CELL_SIZE+12, 512))
 
         # bubble is a sequence of tiles in an image with 16x16 size
         bubble_idle = pygame.image.load("assets/bubble_idle.png")
@@ -372,7 +418,11 @@ while not exit:
 
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)
-    pygame.draw.circle(canvas, (255, 0, 0), (player_pos[0]+CELL_SIZE//2, player_pos[1]+CELL_SIZE//2), PLAYER_SIZE)
+    # pygame.draw.circle(canvas, (255, 0, 0), (player_pos[0]+CELL_SIZE//2, player_pos[1]+CELL_SIZE//2), PLAYER_SIZE)
+
+    canvas.blit(character_run_sprites[(pygame.time.get_ticks())//300 % len(character_run_sprites)], (player_pos[0]+4, player_pos[1]+4))
+    # add the bubble
+    canvas.blit(character_bubble_sprites[(pygame.time.get_ticks())//600 % 2], (player_pos[0], player_pos[1]))
     
     # check if player is on portal
     for i,portal in enumerate(map_gen.portal_pos):

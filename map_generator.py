@@ -335,4 +335,101 @@ class map_generator:
                     # top right bottom wall left floor
                     elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
                         self.map[i, j] = 16
+
+    def draw_portals(self, x, y):
+        pos = self.get_map_pos(x, y)
+        image = pygame.image.load(portal_tile_path)
+        image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+        rect = image.get_rect()
+        rect.topleft = pos
+        self.canvas.blit(image, rect)
+        
+
+    def draw_obstacles(self, x, y, obstacle_name):
+        pos = self.get_map_pos(x, y)
+        if obstacle_name == "water obstacle":
+            image = pygame.image.load(water_tile_path)
+            image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+            rect = image.get_rect()
+            rect.topleft = pos
+            self.canvas.blit(image, rect)
+        elif obstacle_name == "plant obstacle":
+            image = pygame.image.load(plant_tile_path)
+            image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+            rect = image.get_rect()
+            rect.topleft = pos
+            self.canvas.blit(image, rect)
+        elif obstacle_name == "fire obstacle":
+            image = pygame.image.load(fire_tile_path)
+            image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+            rect = image.get_rect()
+            rect.topleft = pos
+            self.canvas.blit(image, rect)
+        
+        
+    def add_portals_and_obstacles(self, riddle_no):
+        total_count = riddle_no * 2
+        interval = (MAP_SIZE - 4) / total_count  # -4 to skip borders and the start/finish rows
+
+        self.spawn_rows = [int(interval * i) + 1 for i in range(1, total_count + 1)]
+        self.spawn_rows = sorted(set(self.spawn_rows))  # unique row indices
+
+        portals = PORTALS[: riddle_no]
+        obstacles = OBSTACLES[: riddle_no]
+
+        self.riddle_order = []
+        first_portal = random.choice(portals)
+        self.riddle_order.append(first_portal)
+        portals.remove(first_portal)
+
+        for i in range(total_count - 1):
+            choose_portal = random.choice([True,False])
+            if choose_portal and portals:
+                portal = random.choice(portals)
+                self.riddle_order.append(portal)
+                portals.remove(portal)
+            elif not choose_portal and obstacles:
+                # Ensure the obstacle chosen has its corresponding portal already in riddle_order
+                eligible_obstacles = [obs for obs in obstacles if OBSTACLE_TO_PORTAL[obs] in self.riddle_order]
+                if eligible_obstacles:
+                    obstacle = random.choice(eligible_obstacles)
+                    self.riddle_order.append(obstacle)
+                    obstacles.remove(obstacle)
+                else:
+                    portal = random.choice(portals)
+                    self.riddle_order.append(portal)
+                    portals.remove(portal)
+            else:
+                thing = random.choice(portals + obstacles)
+                self.riddle_order.append(thing)
+                if thing in portals:
+                    portals.remove(thing)
+                else:
+                    obstacles.remove(thing)
+
+        print(self.riddle_order)
+
+    def draw_portals_and_obstacles(self):
+        self.portal_pos = []
+        self.obstacle_pos = []
+
+        for row_index, row in enumerate(self.spawn_rows):
+            riddle_item = self.riddle_order[row_index]
+            if riddle_item in OBSTACLES:
+                # Populate map row with portals or obstacles
+                for col in range(1, self.cols - 1):  # Skip the borders
+                    if self.map[col, row] >= 249:  # Floor tile
+                        self.draw_obstacles(col, row, riddle_item)
+                        self.obstacle_pos.append((col, row, riddle_item))
+            else:
+                # Populate map with one portal per row at the smallest col number which is a floor tile
+                for col in range(1, self.cols - 1):  # Skip the borders
+                    if self.map[col, row] >= 249:  # Floor tile
+                        self.draw_portals(col, row)
+                        self.portal_pos.append((col, row))
+                        break  # Only place one portal per row
+
+        return self.portal_pos, self.obstacle_pos
+
+        
                     

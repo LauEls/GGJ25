@@ -71,6 +71,7 @@ canvas = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 init_map()
 
+
 while not exit: 
     if state == 1:
         for event in pygame.event.get(): 
@@ -223,18 +224,42 @@ while not exit:
 
     # if win overlay with gray and write win text
     if win:
-        pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
         level += 1
         if level <= 3:
-            pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+            pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
             util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+            util.write_text(canvas, "Brace yourself for the next challenge!", "white", "comic sans", 20, WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 50)
             pygame.display.update()
-            time.sleep(3)
+            time.sleep(5)
             init_map()
         else:
-            pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-            util.write_text(canvas, "You Won!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+            pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+             # game title with glowing torch animations on the sides
+            util.write_text(canvas, "Bubble Bound", "white", "comic sans", 68, WINDOW_WIDTH//2, 210)
+            # subtitle
+            util.write_text(canvas, "Escape the Toxic Abyss", "white", "comic sans", 20, WINDOW_WIDTH//2, 260)
+            
+            # torch is a sequence of tiles in an image with 16x16 size
+            torch = pygame.image.load("assets/tiles/torch_yellow.png")
+            # split into the 8 torches for the animation
+            torches = []
+            for i in range(8):
+                torches.append(pygame.transform.scale(torch.subsurface((i*16, 0, 16, 16)), (CELL_SIZE*2, CELL_SIZE*2)))
+            # draw torch as an animated sprite
+            canvas.blit(torches[(pygame.time.get_ticks()+ 50)//100 % 8], (WINDOW_WIDTH//2-300, 180))
+            canvas.blit(torches[pygame.time.get_ticks()//100 % 8], (WINDOW_WIDTH//2+250, 180))
+
+            util.write_text(canvas, "You Won!", "white", "comic sans", 124, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+            for i, line in enumerate(credits):
+                util.write_text(canvas, line, WHITE, "comic sans", 20, WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + (i * 40) + 240)
+            # on enter exit game
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    exit = True
+            # on escape exit the game
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    exit = True
 
     
     # if game over overlay with red and write game over text

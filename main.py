@@ -9,7 +9,11 @@ from map_generator import map_generator
 from sokoban_puzzle import SokobanMap
 from player import Player
 
+pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
 pygame.init() 
+pygame.mixer.init()
+pygame.mixer.music.load('assets/sounds/level.mp3')
+pygame.mixer.music.play(-1)
 
 state = 0
 
@@ -31,11 +35,12 @@ map_gen.build_the_wall()
 if VERBOSE:
     print("starting random walk")
 cells_drawn = map_gen.random_walk()
-map_gen.add_portals(3)
+
 if VERBOSE:
     print("finished random walk")
     print("filling empty cells")
 map_gen.draw_random_cells()
+
 if VERBOSE:
     print("finished filling empty cells")
 
@@ -109,14 +114,19 @@ while not exit:
     canvas.fill((59, 59, 59))
 
     # draw the known player tiles
-    # for tile in player.known_tiles:
-    #     pos = map_gen.get_map_pos(tile.x, tile.y)
-    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+    for tile in player.known_tiles:
+        pos = map_gen.get_map_pos(tile.x, tile.y)
+        canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+
+    # for x in range(MAP_SIZE):
+    #     for y in range(MAP_SIZE):
+    #         pos = map_gen.get_map_pos(x, y)
+    #         canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+
+    # draw portals and obstacles
+    map_gen.draw_portals_and_obstacles(player.known_tiles)
     
-    for x in range(MAP_SIZE):
-        for y in range(MAP_SIZE):
-            pos = map_gen.get_map_pos(x, y)
-            canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+
 
 
     # overlay with dark mist
@@ -143,26 +153,12 @@ while not exit:
             canvas.blit(surface, (pos[0], pos[1]))
 
 
-    # draw the known player tiles
-    # for tile in player.known_tiles:
-    #     pos = map_gen.get_map_pos(tile.x, tile.y)
-    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
-    
-    for x in range(MAP_SIZE):
-        for y in range(MAP_SIZE):
-            pos = map_gen.get_map_pos(x, y)
-            canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
-
-
     finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
     canvas.blit(tiles.type_to_tile(248), finish_pos)
             
     # starting tile
     start_pos = map_gen.get_map_pos(1, 1)
     canvas.blit(tiles.type_to_tile(247), start_pos)
-
-    # draw portals and obstacles
-    map_gen.draw_portals_and_obstacles()
 
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)

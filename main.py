@@ -213,8 +213,22 @@ while not exit:
     
     # if game over overlay with red and write game over text
     if game_over:
-        pygame.draw.rect(canvas, (255, 0, 0), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        util.write_text(canvas, "Game Over!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+        pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+        game_over_image = pygame.image.load('assets\game_over.jpg')
+        game_over_image_rect = game_over_image.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+        canvas.blit(game_over_image, game_over_image_rect)
+        util.write_text(canvas, "I need to find a way to shield myself and overcome these obstacles...", WHITE, "comic sans", 24, WINDOW_WIDTH // 2, game_over_image_rect.bottom + 30)
+        util.write_text(canvas, "Press Enter to replay, Esc to quit", WHITE, "comic sans", 24, WINDOW_WIDTH // 2, game_over_image_rect.bottom + 60)
+        # on enter restart the game, renew the map completely
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN:
+                game_over = False
+                win = False
+                # reset the game, hard code back to level 1, there should be a init function
+        # on escape exit the game
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                exit = True
 
     pygame.display.update()
     clock.tick(30)

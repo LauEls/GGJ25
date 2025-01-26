@@ -1,7 +1,9 @@
 import pygame
 import numpy as np
+import random
 
 from map_generator import map_generator
+from tileset import Tileset
 
 CELLS = 10
 CELL_SIZE = 40
@@ -27,10 +29,13 @@ class SokobanMap:
         self.canvas = canvas
         self.load_map(map_id)
         self.player_pos = (1, 1)
+        self.box_pos = []
         self.cells = len(self.map)
         self.cell_size = int(window_height / self.cells)
         self.finished = False
         self.type = type
+        self.tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size)
+        self.tiles_small = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size//3*2)
 
 
     def load_map(self, map_id):
@@ -45,30 +50,61 @@ class SokobanMap:
                     new_line.append(char)
             self.map.append(new_line)
 
+        # self.tile_map = np.ones((len(self.map), len(self.map[0])))*-1
+        # for y, row in enumerate(self.map):
+        #     for x, col in enumerate(row):
+        #         if col == WALL:
+        #             self.tile_map[y][x] = 1
+        #         elif col == GOAL:
+        #             self.tile_map[y][x] = 244
+        #         else:
+        #             self.tile_map[y][x] = random.randint(249, 255)
+
+
+
     def get_map_pos(self, x, y):
         return (x*self.cell_size, y*self.cell_size)
 
     def render_map(self):
         self.canvas.fill((0, 0, 0))
-
+        self.box_pos = []
         self.box_on_goal_cntr = 0
+        
         for y, row in enumerate(self.map):
             for x, col in enumerate(row):
                 pos = self.get_map_pos(x, y)
+                pos_small = (pos[0]+self.cell_size//6, pos[1]+self.cell_size//6)
                 if col == WALL:
-                    pygame.draw.rect(self.canvas, WALL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    self.canvas.blit(self.tiles.type_to_tile(0), pos)
+                    # self.tile_map[y][x] = 1
+                    # pygame.draw.rect(self.canvas, WALL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                 elif col == BOX:
-                    pygame.draw.rect(self.canvas, BOX_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    self.canvas.blit(self.tiles.type_to_tile(254), pos)
+                    self.canvas.blit(self.tiles_small.type_to_tile(245), pos_small)
+                    
+                    # pygame.draw.rect(self.canvas, BOX_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    # self.box_pos.append((x, y))
                 elif col == GOAL:
-                    pygame.draw.rect(self.canvas, GOAL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    self.canvas.blit(self.tiles.type_to_tile(244), pos)
+                    # pygame.draw.rect(self.canvas, GOAL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                 elif col == BOX_ON_GOAL:
-                    pygame.draw.rect(self.canvas, BOX_ON_GOAL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    self.canvas.blit(self.tiles.type_to_tile(243), pos)
+                    self.canvas.blit(self.tiles_small.type_to_tile(245), pos_small)
+                    # pygame.draw.rect(self.canvas, BOX_ON_GOAL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    # self.box_pos.append((x, y))
                     self.box_on_goal_cntr += 1
-                elif col == PLAYER or col == PLAYER_ON_GOAL:
-                    pygame.draw.rect(self.canvas, PLAYER_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                elif col == PLAYER:
+                    self.canvas.blit(self.tiles.type_to_tile(254), pos)
+                    pygame.draw.circle(self.canvas, PLAYER_COLOR, (pos[0]+self.cell_size//2, pos[1]+self.cell_size//2), self.cell_size//4)
+                    self.player_pos = (x, y)
+                elif col == PLAYER_ON_GOAL:
+                    self.canvas.blit(self.tiles.type_to_tile(244), pos)
+                    pygame.draw.circle(self.canvas, PLAYER_COLOR, (pos[0]+self.cell_size//2, pos[1]+self.cell_size//2), self.cell_size//4)
+                    # pygame.draw.rect(self.canvas, PLAYER_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                     self.player_pos = (x, y)
                 elif col == EMPTY:
-                    pygame.draw.rect(self.canvas, EMPTY_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+                    self.canvas.blit(self.tiles.type_to_tile(254), pos)
+                    # pygame.draw.rect(self.canvas, EMPTY_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
 
         
 

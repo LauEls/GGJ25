@@ -244,7 +244,6 @@ class map_generator:
 
     def draw_map(self):
         for i in range(self.rows):
-            # print(self.map[i])
             for j in range(self.cols):
                 if self.map[i, j] == 0:
                     color = (0, 0, 0)

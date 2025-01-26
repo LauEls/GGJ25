@@ -42,6 +42,30 @@ class SokobanMap:
         self.tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size)
         self.tiles_small = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size//3*2)
 
+        # load character sprites for animations
+        self.character_run = pygame.image.load("assets/character/run.png")
+        self.character_run_sprites = []
+        for i in range(4):
+            self.character_run_sprites.append(pygame.transform.scale(self.character_run.subsurface((i*16, 0, 16, 16)), (int(self.cell_size*0.8), int(self.cell_size*0.8))))
+
+        self.character_idle = pygame.image.load("assets/character/idle.png")
+        self.character_idle_sprites = []
+        for i in range(2):
+            self.character_idle_sprites.append(pygame.transform.scale(self.character_idle.subsurface((i*16, 0, 16, 16)), (int(self.cell_size*0.8), int(self.cell_size*0.8))))
+                                        
+        self.character_die = pygame.image.load("assets/character/die.png")
+        self.character_die_sprites = []
+        for i in range(3):
+            self.character_die_sprites.append(pygame.transform.scale(self.character_die.subsurface((i*16, 0, 16, 16)), (int(self.cell_size*0.8), int(self.cell_size*0.8))))
+
+        self.character_bubble = pygame.image.load("assets/bubble_idle.png")
+        # split into the 2 sprites for the animation
+        self.character_bubble_sprites = []
+        for i in range(2):
+            self.character_bubble_sprites.append(pygame.transform.scale(self.character_bubble.subsurface((i*16, 0, 16, 16)), (self.cell_size, self.cell_size)))
+
+        
+
     def reset_map(self):
         self.__init__(self.canvas, self.map_id, self.window_height, self.level)
 
@@ -108,11 +132,16 @@ class SokobanMap:
                     # self.box_on_goal_cntr += 1
                 elif col == PLAYER:
                     self.canvas.blit(self.tiles.type_to_tile(254), pos)
-                    pygame.draw.circle(self.canvas, PLAYER_COLOR, (pos[0]+self.cell_size//2, pos[1]+self.cell_size//2), self.cell_size//4)
+                    # pygame.draw.circle(self.canvas, PLAYER_COLOR, (pos[0]+self.cell_size//2, pos[1]+self.cell_size//2), self.cell_size//4)
+                    self.canvas.blit(self.character_run_sprites[(pygame.time.get_ticks())//300 % len(self.character_run_sprites)], (pos[0]+4, pos[1]+4))
+                    # add the bubble
+                    self.canvas.blit(self.character_bubble_sprites[(pygame.time.get_ticks())//600 % 2], (pos[0], pos[1]))
                     self.player_pos = (x, y)
                 elif col == PLAYER_ON_GOAL:
                     self.canvas.blit(self.tiles.type_to_tile(244), pos)
-                    pygame.draw.circle(self.canvas, PLAYER_COLOR, (pos[0]+self.cell_size//2, pos[1]+self.cell_size//2), self.cell_size//4)
+                    self.canvas.blit(self.character_run_sprites[(pygame.time.get_ticks())//300 % len(self.character_run_sprites)], (pos[0]+4, pos[1]+4))
+                    # add the bubble
+                    self.canvas.blit(self.character_bubble_sprites[(pygame.time.get_ticks())//600 % 2], (pos[0], pos[1]))
                     # pygame.draw.rect(self.canvas, PLAYER_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                     self.player_pos = (x, y)
                 elif col == EMPTY:

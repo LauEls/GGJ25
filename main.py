@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 from constants import *
 import util
+import math
 import sys
 from tileset import Tileset
 from map_generator import map_generator
@@ -45,10 +46,16 @@ sokoban_maps = []
 for i in range(3):
     sokoban_maps.append(SokobanMap(canvas, i+1, WINDOW_HEIGHT))
 
-map_gen.draw_map()
-map_gen.build_the_wall()
+sokoban_maps = []
+for i in range(3):
+    sokoban_maps.append(SokobanMap(canvas, i+1))
+
+# Generate portals and obstacles
+map_gen.add_portals_and_obstacles(3)
+
 
 guard = False
+map_gen.build_the_wall()
 
 while not exit: 
     if state == 1:
@@ -85,7 +92,6 @@ while not exit:
             exit = True
         # check for wasd for movement
         if event.type == pygame.KEYDOWN:
-            print("key pressed", event.key)
             if event.key == pygame.K_w:
                 player.move(0, -1)
             if event.key == pygame.K_s:
@@ -100,7 +106,7 @@ while not exit:
         win = True
 
     # draw black background
-    canvas.fill((0, 0, 0))
+    canvas.fill((59, 59, 59))
 
     # draw the known player tiles
     # for tile in player.known_tiles:
@@ -112,12 +118,51 @@ while not exit:
             pos = map_gen.get_map_pos(x, y)
             canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
 
+
+    # overlay with dark mist
+    for i in range(MAP_SIZE):
+        for j in range(MAP_SIZE):
+            pos = map_gen.get_map_pos(i, j)
+            surface = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
+            surface.fill((59,59,59,200))
+
+            # make the player a light in the mist with pulsating brightness
+            if math.sqrt((player.x - i)**2 + (player.y - j)**2) < 4:
+                surface.fill((11,102,35,200-int((math.sin(pygame.time.get_ticks()/600)+1)*80/2)))
+
+            if math.sqrt((player.x - i)**2 + (player.y - j)**2) < 3:
+                surface.fill((11,102,35,160-int((math.sin(pygame.time.get_ticks()/600)+1)*40/2)))
+
+            if math.sqrt((player.x - i)**2 + (player.y - j)**2) < 2:
+                surface.fill((11,102,35,120-int((math.sin(pygame.time.get_ticks()/600)+1)*20/2)))
+
+            if player.x == i and player.y == j:
+                surface.fill((11,102,35,40 + int((math.sin(pygame.time.get_ticks()/600)+1)*80/2)))
+
+            
+            canvas.blit(surface, (pos[0], pos[1]))
+
+
+    # draw the known player tiles
+    # for tile in player.known_tiles:
+    #     pos = map_gen.get_map_pos(tile.x, tile.y)
+    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+    
+    for x in range(MAP_SIZE):
+        for y in range(MAP_SIZE):
+            pos = map_gen.get_map_pos(x, y)
+            canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+
+
     finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
     canvas.blit(tiles.type_to_tile(248), finish_pos)
             
     # starting tile
     start_pos = map_gen.get_map_pos(1, 1)
     canvas.blit(tiles.type_to_tile(247), start_pos)
+
+    # draw portals and obstacles
+    map_gen.draw_portals_and_obstacles()
 
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)

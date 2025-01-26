@@ -244,7 +244,6 @@ class map_generator:
 
     def draw_map(self):
         for i in range(self.rows):
-            # print(self.map[i])
             for j in range(self.cols):
                 if self.map[i, j] == 0:
                     color = (0, 0, 0)
@@ -257,15 +256,20 @@ class map_generator:
     def get_neighbors(self, x, y):
 
         # scan the 4 neighbors of the current cell
-        neighbors = np.zeros(4)
+        neighbors = {
+            "left": -1,
+            "right": -1,
+            "bottom": -1,
+            "top": -1
+        }
         if x > 0:
-            neighbors[0] = self.map[x-1, y]
+            neighbors["left"] = self.map[x-1, y]
         if y < self.cols-1:
-            neighbors[1] = self.map[x, y+1]
+            neighbors["bottom"] = self.map[x, y+1]
         if x < self.rows-1:
-            neighbors[2] = self.map[x+1, y]
+            neighbors["right"] = self.map[x+1, y]
         if y > 0:
-            neighbors[3] = self.map[x, y-1]
+            neighbors["top"] = self.map[x, y-1]
 
         return neighbors
 
@@ -276,8 +280,156 @@ class map_generator:
                 # check if wall
                 if self.map[i, j] == 0:
                     neighbors = self.get_neighbors(i, j)
-                    # print(neighbors)
-                    # check if left and up are walls and right and down are not
-                    if neighbors[0] < 246 and neighbors[3] < 246 and neighbors[1] > 245 and neighbors[2] > 245:
-                        # print(f"i: {i}, j: {j} has neighbors: {neighbors}")
+                    # if any of the neighbors is a floor tile, then its a wall
+                    if neighbors["left"] > 245 or neighbors["right"] > 245 or neighbors["top"] > 245 or neighbors["bottom"] > 245:
+                        self.map[i, j] = 1
+
+        
+        # go only through wall tiles
+        for i in range(self.rows):
+            for j in range(self.cols):
+                if self.map[i, j] == 1:
+                    neighbors = self.get_neighbors(i, j)
+                    # all neighbors are floor
+                    if neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 2
+                    # only right is wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 3
+                    # only left is wall
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 4
+                    # only top is wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 5
+                    # only bottom is wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
                         self.map[i, j] = 6
+                    # top and right are walls
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 7
+                    # left and right floor, top and bottom wall
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 8
+                    # left right wall, top bottom floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 9
+                    # right and bottom wall, top and left floor
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 10
+                    # left bottom wall, right top floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 11
+                    # top left wall bottom right floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 12 
+                    # left right top wall, bottom floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] > FLOOR_TILE_START:
+                        self.map[i, j] = 13
+                    # left right bottom wall, top floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] > FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 14
+                    # top left bottom wall right floor
+                    elif neighbors["left"] < FLOOR_TILE_START and neighbors["right"] > FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 15
+                    # top right bottom wall left floor
+                    elif neighbors["left"] > FLOOR_TILE_START and neighbors["right"] < FLOOR_TILE_START and neighbors["top"] < FLOOR_TILE_START and neighbors["bottom"] < FLOOR_TILE_START:
+                        self.map[i, j] = 16
+
+    def draw_portals(self, x, y):
+        pos = self.get_map_pos(x, y)
+        image = pygame.image.load(portal_tile_path)
+        image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+        rect = image.get_rect()
+        rect.topleft = pos
+        self.canvas.blit(image, rect)
+        
+
+    def draw_obstacles(self, x, y, obstacle_name):
+        pos = self.get_map_pos(x, y)
+        if obstacle_name == "water obstacle":
+            image = pygame.image.load(water_tile_path)
+            image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+            rect = image.get_rect()
+            rect.topleft = pos
+            self.canvas.blit(image, rect)
+        elif obstacle_name == "plant obstacle":
+            image = pygame.image.load(plant_tile_path)
+            image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+            rect = image.get_rect()
+            rect.topleft = pos
+            self.canvas.blit(image, rect)
+        elif obstacle_name == "fire obstacle":
+            image = pygame.image.load(fire_tile_path)
+            image = pygame.transform.scale(image, (CELL_SIZE, CELL_SIZE))
+            rect = image.get_rect()
+            rect.topleft = pos
+            self.canvas.blit(image, rect)
+        
+        
+    def add_portals_and_obstacles(self, riddle_no):
+        total_count = riddle_no * 2
+        interval = (MAP_SIZE - 4) / total_count  # -4 to skip borders and the start/finish rows
+
+        self.spawn_rows = [int(interval * i) + 1 for i in range(1, total_count + 1)]
+        self.spawn_rows = sorted(set(self.spawn_rows))  # unique row indices
+
+        portals = PORTALS[: riddle_no]
+        obstacles = OBSTACLES[: riddle_no]
+
+        self.riddle_order = []
+        first_portal = random.choice(portals)
+        self.riddle_order.append(first_portal)
+        portals.remove(first_portal)
+
+        for i in range(total_count - 1):
+            choose_portal = random.choice([True,False])
+            if choose_portal and portals:
+                portal = random.choice(portals)
+                self.riddle_order.append(portal)
+                portals.remove(portal)
+            elif not choose_portal and obstacles:
+                # Ensure the obstacle chosen has its corresponding portal already in riddle_order
+                eligible_obstacles = [obs for obs in obstacles if OBSTACLE_TO_PORTAL[obs] in self.riddle_order]
+                if eligible_obstacles:
+                    obstacle = random.choice(eligible_obstacles)
+                    self.riddle_order.append(obstacle)
+                    obstacles.remove(obstacle)
+                else:
+                    portal = random.choice(portals)
+                    self.riddle_order.append(portal)
+                    portals.remove(portal)
+            else:
+                thing = random.choice(portals + obstacles)
+                self.riddle_order.append(thing)
+                if thing in portals:
+                    portals.remove(thing)
+                else:
+                    obstacles.remove(thing)
+
+        print(self.riddle_order)
+
+    def draw_portals_and_obstacles(self):
+        self.portal_pos = []
+        self.obstacle_pos = []
+
+        for row_index, row in enumerate(self.spawn_rows):
+            riddle_item = self.riddle_order[row_index]
+            if riddle_item in OBSTACLES:
+                # Populate map row with portals or obstacles
+                for col in range(1, self.cols - 1):  # Skip the borders
+                    if self.map[col, row] >= 249:  # Floor tile
+                        self.draw_obstacles(col, row, riddle_item)
+                        self.obstacle_pos.append((col, row, riddle_item))
+            else:
+                # Populate map with one portal per row at the smallest col number which is a floor tile
+                for col in range(1, self.cols - 1):  # Skip the borders
+                    if self.map[col, row] >= 249:  # Floor tile
+                        self.draw_portals(col, row)
+                        self.portal_pos.append((col, row))
+                        break  # Only place one portal per row
+
+        return self.portal_pos, self.obstacle_pos
+
+        
+                    

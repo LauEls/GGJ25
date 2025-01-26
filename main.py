@@ -3,59 +3,70 @@ import numpy as np
 from constants import *
 import util
 import math
+import random
 import sys
 from tileset import Tileset
 from map_generator import map_generator
 from sokoban_puzzle import SokobanMap
 from player import Player
 
+def init_map():
+    global clock, exit, win, player, tiles, map_gen, guard, sokoban_maps
+
+    canvas.fill((255, 0, 0))
+  
+    # TITLE OF CANVAS 
+    pygame.display.set_caption("My Board") 
+    clock = pygame.time.Clock()
+    exit = False
+    win = False
+
+    if VERBOSE:
+        print("initializing map generator")
+    map_gen = map_generator(canvas, MAP_SIZE, MAP_SIZE, CELL_SIZE)
+    map_gen.build_the_wall()
+
+    if VERBOSE:
+        print("starting random walk")
+    cells_drawn = map_gen.random_walk()
+    map_gen.add_portals(3)
+    if VERBOSE:
+        print("finished random walk")
+        print("filling empty cells")
+    map_gen.draw_random_cells()
+    if VERBOSE:
+        print("finished filling empty cells")
+
+    player = Player(1, 1, map_gen.map)
+    tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, CELL_SIZE)
+
+    sokoban_maps = []
+    puzzle_ids = []
+    for _ in range(3):
+        new_id = random.randint(1, SOKOBAN_PUZZLE_COUNT)
+        while new_id in puzzle_ids:
+            new_id = random.randint(1, SOKOBAN_PUZZLE_COUNT)
+
+        puzzle_ids.append(new_id)
+        sokoban_maps.append(SokobanMap(canvas, new_id, WINDOW_HEIGHT, level=level))
+
+
+    # Generate portals and obstacles
+    map_gen.add_portals_and_obstacles(3)
+
+
+    guard = False
+    map_gen.build_the_wall()
+
 pygame.init() 
 
 state = 0
+level = 1
 
 # CREATING CANVAS 
 canvas = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) 
-canvas.fill((255, 0, 0))
-  
-# TITLE OF CANVAS 
-pygame.display.set_caption("My Board") 
-clock = pygame.time.Clock()
-exit = False
-win = False
 
-if VERBOSE:
-    print("initializing map generator")
-map_gen = map_generator(canvas, MAP_SIZE, MAP_SIZE, CELL_SIZE)
-map_gen.build_the_wall()
-
-if VERBOSE:
-    print("starting random walk")
-cells_drawn = map_gen.random_walk()
-map_gen.add_portals(3)
-if VERBOSE:
-    print("finished random walk")
-    print("filling empty cells")
-map_gen.draw_random_cells()
-if VERBOSE:
-    print("finished filling empty cells")
-
-player = Player(1, 1, map_gen.map)
-tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, CELL_SIZE)
-
-sokoban_maps = []
-for i in range(3):
-    sokoban_maps.append(SokobanMap(canvas, i+1, WINDOW_HEIGHT))
-
-sokoban_maps = []
-for i in range(3):
-    sokoban_maps.append(SokobanMap(canvas, i+1))
-
-# Generate portals and obstacles
-map_gen.add_portals_and_obstacles(3)
-
-
-guard = False
-map_gen.build_the_wall()
+init_map()
 
 while not exit: 
     if state == 1:
@@ -78,8 +89,7 @@ while not exit:
 
         sokoban_maps[current_portal_id].render_map()
 
-        if sokoban_maps[current_portal_id].box_on_goal_cntr == 3:
-            print("You win!")
+        if sokoban_maps[current_portal_id].box_cntr == 0:
             sokoban_maps[current_portal_id].finished = True
             state = 0
 
@@ -183,6 +193,11 @@ while not exit:
     if win:
         pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
         util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+        level += 1
+        init_map()
+        if level > 3:
+            pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+            util.write_text(canvas, "You Won!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
     pygame.display.update()
     clock.tick(30)

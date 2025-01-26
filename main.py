@@ -28,12 +28,12 @@ def init_map():
     if VERBOSE:
         print("initializing map generator")
     map_gen = map_generator(canvas, MAP_SIZE, MAP_SIZE, CELL_SIZE)
-    map_gen.build_the_wall()
+    # map_gen.build_the_wall()
 
     if VERBOSE:
         print("starting random walk")
-    cells_drawn = map_gen.random_walk()
-    map_gen.add_portals(3)
+    map_gen.random_walk()
+    # map_gen.add_portals(3)
     if VERBOSE:
         print("finished random walk")
         print("filling empty cells")
@@ -58,9 +58,8 @@ def init_map():
     # Generate portals and obstacles
     map_gen.add_portals_and_obstacles(3)
 
-
-    guard = False
     map_gen.build_the_wall()
+    guard = False
 
 
 pygame.init() 
@@ -332,6 +331,7 @@ while not exit:
             pygame.display.update()
             time.sleep(3)
             init_map()
+            continue
         else:
             pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
             util.write_text(canvas, "You Won!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)

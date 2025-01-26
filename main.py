@@ -12,7 +12,7 @@ from sokoban_puzzle import SokobanMap
 from player import Player
 
 def init_map():
-    global clock, exit, win, player, tiles, map_gen, guard, sokoban_maps
+    global clock, exit, win, game_over, player, tiles, map_gen, guard, sokoban_maps
 
     canvas.fill((255, 0, 0))
   
@@ -21,6 +21,7 @@ def init_map():
     clock = pygame.time.Clock()
     exit = False
     win = False
+    game_over = False
 
     if VERBOSE:
         print("initializing map generator")
@@ -249,6 +250,8 @@ while not exit:
             if event.key == pygame.K_RETURN:
                 game_over = False
                 win = False
+                level = 1
+                init_map()
                 # reset the game, hard code back to level 1, there should be a init function
         # on escape exit the game
         if event.type == pygame.KEYDOWN:

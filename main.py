@@ -98,6 +98,12 @@ def main_menu(clock, canvas, selection_sound, map_gen):
             for y in range(MAP_SIZE):
                 pos = map_gen.get_map_pos(x, y)
                 canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+        
+        # starting and finish tile
+        start_pos = map_gen.get_map_pos(1, 1)
+        canvas.blit(tiles.type_to_tile(247), start_pos)
+        finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
+        canvas.blit(tiles.type_to_tile(248), finish_pos)
 
         # overlay with opacity
         for i in range(MAP_SIZE):
@@ -123,6 +129,16 @@ def main_menu(clock, canvas, selection_sound, map_gen):
         canvas.blit(torches[(pygame.time.get_ticks()+ 50)//100 % 8], (WINDOW_WIDTH//2-300, 180))
         canvas.blit(torches[pygame.time.get_ticks()//100 % 8], (WINDOW_WIDTH//2+250, 180))
 
+        
+        # bubble is a sequence of tiles in an image with 16x16 size
+        character_idle = pygame.image.load("assets/character/spr_blob.png")
+        # split into the 2 sprites for the animation
+        character_idle_sprites = []
+        for i in range(6):
+            character_idle_sprites.append(pygame.transform.scale(character_idle.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*1.3), int(CELL_SIZE*1.3))))
+        # draw torch as an animated sprite
+        canvas.blit(character_idle_sprites[(pygame.time.get_ticks())//600 % len(character_idle_sprites)], (WINDOW_WIDTH//2-CELL_SIZE+12, 512))
+
         # bubble is a sequence of tiles in an image with 16x16 size
         bubble_idle = pygame.image.load("assets/bubble_idle.png")
         # split into the 2 sprites for the animation
@@ -130,22 +146,23 @@ def main_menu(clock, canvas, selection_sound, map_gen):
         for i in range(2):
             bubble_idle_sprites.append(pygame.transform.scale(bubble_idle.subsurface((i*16, 0, 16, 16)), (CELL_SIZE*2, CELL_SIZE*2)))
         # draw torch as an animated sprite
-        canvas.blit(bubble_idle_sprites[(pygame.time.get_ticks())//600 % 2], (WINDOW_WIDTH//2-CELL_SIZE, 320))
+        canvas.blit(bubble_idle_sprites[(pygame.time.get_ticks())//600 % 2], (WINDOW_WIDTH//2-CELL_SIZE, 500))
         
         
         util.write_text(canvas, "Press Enter to start", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT-200)
         
         # wasd to move, illustrated with arrow tiles, place in a row
-        canvas.blit(tiles.type_to_tile(20), (WINDOW_WIDTH//2-CELL_SIZE*3, WINDOW_HEIGHT//2-100))
-        canvas.blit(tiles.type_to_tile(21), (WINDOW_WIDTH//2-CELL_SIZE, WINDOW_HEIGHT//2-100))
-        canvas.blit(tiles.type_to_tile(22), (WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2-100))
-        canvas.blit(tiles.type_to_tile(23), (WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2-100))
+        VERTICAL_CONTROL_OFF = 200
+        canvas.blit(tiles.type_to_tile(20), (WINDOW_WIDTH//2-CELL_SIZE*3, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF))
+        canvas.blit(tiles.type_to_tile(21), (WINDOW_WIDTH//2-CELL_SIZE, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF))
+        canvas.blit(tiles.type_to_tile(22), (WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF))
+        canvas.blit(tiles.type_to_tile(23), (WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF))
 
         # label the control tiles
-        util.write_text(canvas, "w", "white", "comic sans", 20, WINDOW_WIDTH//2-CELL_SIZE*3, WINDOW_HEIGHT//2-100)
-        util.write_text(canvas, "s", "white", "comic sans", 20, WINDOW_WIDTH//2-CELL_SIZE, WINDOW_HEIGHT//2-100)
-        util.write_text(canvas, "a", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2-100)
-        util.write_text(canvas, "d", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2-100)
+        util.write_text(canvas, "w", "white", "comic sans", 20, WINDOW_WIDTH//2-CELL_SIZE*3, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF)
+        util.write_text(canvas, "s", "white", "comic sans", 20, WINDOW_WIDTH//2-CELL_SIZE, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF)
+        util.write_text(canvas, "a", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF)
+        util.write_text(canvas, "d", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF)
 
         pygame.display.update()
         clock.tick(30)

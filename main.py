@@ -11,6 +11,9 @@ from map_generator import map_generator
 from sokoban_puzzle import SokobanMap
 from player import Player
 
+
+pygame.mixer.pre_init(44100, -16, 2, 2048) # setup mixer to avoid sound lag
+
 def init_map():
     global clock, exit, win, game_over, player, tiles, map_gen, guard, sokoban_maps
 
@@ -26,13 +29,12 @@ def init_map():
     if VERBOSE:
         print("initializing map generator")
     map_gen = map_generator(canvas, MAP_SIZE, MAP_SIZE, CELL_SIZE)
-    map_gen.build_the_wall()
+    # map_gen.build_the_wall()
 
     if VERBOSE:
         print("starting random walk")
-    cells_drawn = map_gen.random_walk()
- 
-
+    map_gen.random_walk()
+    # map_gen.add_portals(3)
     if VERBOSE:
         print("finished random walk")
         print("filling empty cells")
@@ -57,22 +59,128 @@ def init_map():
         sokoban_maps.append(SokobanMap(canvas, new_id, map_gen.portals_in_game[i] ,WINDOW_HEIGHT, level=level))
 
 
-
-    guard = False
     map_gen.build_the_wall()
+    guard = False
+
 
 pygame.init() 
+pygame.mixer.init()
+pygame.mixer.music.load('assets/sounds/level.mp3')
+pygame.mixer.music.play(-1)
+
+# sound
+walking_sound_timer = 0
+walking_sound = pygame.mixer.Sound('assets/sounds/walk.mp3')
+walking_sound.set_volume(0.05)
+selection_sound = pygame.mixer.Sound('assets/sounds/selection.mp3')
+selection_sound.set_volume(0.5)
+transition_sound = pygame.mixer.Sound('assets/sounds/transition_1.mp3')
+transition_sound.set_volume(0.3)
+transition_sound_timer = 0
+transition_exit_sound = pygame.mixer.Sound('assets/sounds/transition_exit.mp3')
+transition_exit_sound.set_volume(0.2)
+transition_exit_sound_timer = 0
+
+
+def main_menu(clock, canvas, selection_sound, map_gen):
+    starting_game = False
+    while not starting_game:
+
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_RETURN:
+                    starting_game = True
+
+        canvas.fill((59, 59, 59))
+
+        # render a map
+        for x in range(MAP_SIZE):
+            for y in range(MAP_SIZE):
+                pos = map_gen.get_map_pos(x, y)
+                canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+
+        # overlay with opacity
+        for i in range(MAP_SIZE):
+            for j in range(MAP_SIZE):
+                pos = map_gen.get_map_pos(i, j)
+                surface = pygame.Surface((CELL_SIZE, CELL_SIZE), pygame.SRCALPHA)
+                surface.fill((59,59,59,220))
+
+                canvas.blit(surface, (pos[0], pos[1]))
+
+        # game title with glowing torch animations on the sides
+        util.write_text(canvas, "Bubble Bound", "white", "comic sans", 68, WINDOW_WIDTH//2, 210)
+        # subtitle
+        util.write_text(canvas, "Escape the Toxic Abyss", "white", "comic sans", 20, WINDOW_WIDTH//2, 260)
+        
+        # torch is a sequence of tiles in an image with 16x16 size
+        torch = pygame.image.load("assets/tiles/torch_yellow.png")
+        # split into the 8 torches for the animation
+        torches = []
+        for i in range(8):
+            torches.append(pygame.transform.scale(torch.subsurface((i*16, 0, 16, 16)), (CELL_SIZE*2, CELL_SIZE*2)))
+        # draw torch as an animated sprite
+        canvas.blit(torches[(pygame.time.get_ticks()+ 50)//100 % 8], (WINDOW_WIDTH//2-300, 180))
+        canvas.blit(torches[pygame.time.get_ticks()//100 % 8], (WINDOW_WIDTH//2+250, 180))
+
+        # bubble is a sequence of tiles in an image with 16x16 size
+        bubble_idle = pygame.image.load("assets/bubble_idle.png")
+        # split into the 2 sprites for the animation
+        bubble_idle_sprites = []
+        for i in range(2):
+            bubble_idle_sprites.append(pygame.transform.scale(bubble_idle.subsurface((i*16, 0, 16, 16)), (CELL_SIZE*2, CELL_SIZE*2)))
+        # draw torch as an animated sprite
+        canvas.blit(bubble_idle_sprites[(pygame.time.get_ticks())//600 % 2], (WINDOW_WIDTH//2-CELL_SIZE, 320))
+        
+        
+        util.write_text(canvas, "Press Enter to start", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT-200)
+        
+        # wasd to move, illustrated with arrow tiles, place in a row
+        canvas.blit(tiles.type_to_tile(20), (WINDOW_WIDTH//2-CELL_SIZE*3, WINDOW_HEIGHT//2-100))
+        canvas.blit(tiles.type_to_tile(21), (WINDOW_WIDTH//2-CELL_SIZE, WINDOW_HEIGHT//2-100))
+        canvas.blit(tiles.type_to_tile(22), (WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2-100))
+        canvas.blit(tiles.type_to_tile(23), (WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2-100))
+
+        # label the control tiles
+        util.write_text(canvas, "w", "white", "comic sans", 20, WINDOW_WIDTH//2-CELL_SIZE*3, WINDOW_HEIGHT//2-100)
+        util.write_text(canvas, "s", "white", "comic sans", 20, WINDOW_WIDTH//2-CELL_SIZE, WINDOW_HEIGHT//2-100)
+        util.write_text(canvas, "a", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2-100)
+        util.write_text(canvas, "d", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2-100)
+
+        pygame.display.update()
+        clock.tick(30)
+
+    pygame.mixer.music.stop()
+    # play selection sound once without looop
+    selection_sound.play()
+
+    pygame.mixer.music.load('assets/sounds/level.mp3')
+    pygame.mixer.music.play(-1)
+
+
 
 state = 0
 level = 1
 
 # CREATING CANVAS 
 canvas = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) 
-
 init_map()
 
+main_menu(clock, canvas, selection_sound, map_gen)
 
 while not exit: 
+
+    # walking sound
+    if walking_sound_timer > 0:
+        walking_sound_timer -= 1
+    
+    if transition_sound_timer > 0:
+        transition_sound_timer -= 1
+
+    if transition_exit_sound_timer > 0:
+        transition_exit_sound_timer -= 1
+
+
     if state == 1:
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
@@ -82,13 +190,28 @@ while not exit:
                 if event.key == pygame.K_ESCAPE:
                     state = 0
                     guard = True
+                    transition_exit_sound_timer = 2000
+                    transition_exit_sound.play()
+                    transition_sound_timer = 2000
                 if event.key == pygame.K_w:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((0, -1))
                 if event.key == pygame.K_s:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((0, 1))
                 if event.key == pygame.K_a:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((-1, 0))
                 if event.key == pygame.K_d:
+                    if walking_sound_timer == 0:
+                        walking_sound.play()
+                        walking_sound_timer = 10
                     sokoban_maps[current_portal_id].move_player((1, 0))
 
         sokoban_maps[current_portal_id].render_map()
@@ -122,12 +245,24 @@ while not exit:
         # check for wasd for movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_w:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(0, -1)
             if event.key == pygame.K_s:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(0, 1)
             if event.key == pygame.K_a:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(-1, 0)
             if event.key == pygame.K_d:
+                if walking_sound_timer == 0:
+                    walking_sound.play()
+                    walking_sound_timer = 10
                 player.move(1, 0)
 
     # check for winning condition
@@ -138,14 +273,19 @@ while not exit:
     canvas.fill((59, 59, 59))
 
     # draw the known player tiles
-    # for tile in player.known_tiles:
-    #     pos = map_gen.get_map_pos(tile.x, tile.y)
-    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+    for tile in player.known_tiles:
+        pos = map_gen.get_map_pos(tile.x, tile.y)
+        canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+
+    # for x in range(MAP_SIZE):
+    #     for y in range(MAP_SIZE):
+    #         pos = map_gen.get_map_pos(x, y)
+    #         canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+
+    # draw portals and obstacles
+    map_gen.draw_portals_and_obstacles(player.known_tiles)
     
-    for x in range(MAP_SIZE):
-        for y in range(MAP_SIZE):
-            pos = map_gen.get_map_pos(x, y)
-            canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
+
 
 
     # overlay with dark mist
@@ -172,26 +312,12 @@ while not exit:
             canvas.blit(surface, (pos[0], pos[1]))
 
 
-    # draw the known player tiles
-    # for tile in player.known_tiles:
-    #     pos = map_gen.get_map_pos(tile.x, tile.y)
-    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
-    
-    for x in range(MAP_SIZE):
-        for y in range(MAP_SIZE):
-            pos = map_gen.get_map_pos(x, y)
-            canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
-
-
     finish_pos = map_gen.get_map_pos(MAP_SIZE-2, MAP_SIZE-2)
     canvas.blit(tiles.type_to_tile(248), finish_pos)
             
     # starting tile
     start_pos = map_gen.get_map_pos(1, 1)
     canvas.blit(tiles.type_to_tile(247), start_pos)
-
-    # draw portals and obstacles
-    map_gen.draw_portals_and_obstacles()
 
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)
@@ -202,6 +328,10 @@ while not exit:
         current_portal_id = -1
         if portal[0] == player.x and portal[1] == player.y:
             current_portal_id = i
+            # play selection sound once
+            transition_sound.play()
+            if VERBOSE:
+                print("entering portal", i)
             if not sokoban_maps[current_portal_id].finished and not guard:
                 state = 1
             break
@@ -232,6 +362,7 @@ while not exit:
             pygame.display.update()
             time.sleep(5)
             init_map()
+            continue
         else:
             pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
              # game title with glowing torch animations on the sides

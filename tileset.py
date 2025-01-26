@@ -4,22 +4,24 @@ from constants import *
 
 class Tileset:
 
-    def __init__(self, filename, width, height, rows, cols):
-        image = pygame.image.load(filename).convert()
+    def __init__(self, filename, width, height, rows, cols, cell_size):
+        # image = pygame.image.load(filename).convert()
+        image = pygame.image.load(filename).convert_alpha()
         self.tile_table = []
+        self.cell_size = cell_size
 
         for tile_x in range(0, cols):
             line = []
             self.tile_table.append(line)
             for tile_y in range(0, rows):
                 rect = (tile_x*width, tile_y*height, width, height)
-                line.append(pygame.transform.scale(image.subsurface(rect), (CELL_SIZE, CELL_SIZE)))
+                line.append(pygame.transform.scale(image.subsurface(rect), (self.cell_size, self.cell_size)))
 
 
     def draw(self, screen):
         for x, row in enumerate(self.tile_table):
             for y, tile in enumerate(row):
-                screen.blit(tile, (x*CELL_SIZE, y*CELL_SIZE))
+                screen.blit(tile, (x*self.cell_size, y*self.cell_size))
 
 
     def type_to_tile(self, type):
@@ -62,10 +64,15 @@ class Tileset:
                 return self.get_tile(WALL["wall bottom left top floor right"][0], WALL["wall bottom left top floor right"][1])
             case 16:
                 return self.get_tile(WALL["wall bottom right top floor left"][0], WALL["wall bottom right top floor left"][1])
-            
             # floor tiles and specials
-            case 246:
-                return self.get_tile(START_TILE[0], START_TILE[1])
+            case 243: # sokoban box on goal tile
+                return self.get_tile(BOX_ON_GOAL_TILE[0], BOX_ON_GOAL_TILE[1])
+            case 244: # sokoban goal tile
+                return self.get_tile(GOAL_TILE[0], GOAL_TILE[1])
+            case 245: # sokoban box tile
+                return self.get_tile(BOX_TILE[0], BOX_TILE[1])
+            case 246: # sokoban portal tile
+                return self.get_tile(PORTAL_TILE[0], PORTAL_TILE[1])
             case 247: # start tile
                 return self.get_tile(START_TILE[0], START_TILE[1])
             case 248: # finish tile

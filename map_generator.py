@@ -160,6 +160,23 @@ class map_generator:
         return len(path_pos)
             # time.sleep(0.5)
 
+    def add_portals(self, portal_no):
+        self.portal_pos = []
+        for i in range(portal_no):
+            find_empty = False
+            while not find_empty:
+                x, y = self.choose_random_cell()
+                if self.map[x, y] >= 249:
+                    find_empty = True
+            self.map[x, y] = 246
+            self.portal_pos.append((x, y))
+            pos = self.get_map_pos(x, y)
+            # pygame.draw.rect(self.canvas, (255,0,0), pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+            # pygame.display.update()
+
+        return self.portal_pos
+
+
     def draw_random_cells(self):
         # x, y = self.choose_random_cell()
         for x in range(self.rows):

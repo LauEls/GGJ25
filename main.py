@@ -22,6 +22,7 @@ pygame.display.set_caption("My Board")
 clock = pygame.time.Clock()
 exit = False
 win = False
+game_over = False
 
 if VERBOSE:
     print("initializing map generator")
@@ -180,6 +181,7 @@ while not exit:
     player_pos = map_gen.get_map_pos(player.x, player.y)
     pygame.draw.circle(canvas, (255, 0, 0), (player_pos[0]+CELL_SIZE//2, player_pos[1]+CELL_SIZE//2), PLAYER_SIZE)
     
+    # check if player is on portal
     for i,portal in enumerate(map_gen.portal_pos):
         current_portal_id = -1
         if portal[0] == player.x and portal[1] == player.y:
@@ -188,6 +190,19 @@ while not exit:
                 state = 1
             break
 
+    # check if player is on obstacle
+    for i,obstacle in enumerate(map_gen.obstacle_pos):
+        if obstacle[0] == player.x and obstacle[1] == player.y:
+            if player.water_power and map_gen.obstacle_type[i] == "fire obstacle":
+                map_gen.riddle_order = [0 if x=="fire obstacle" else x for x in map_gen.riddle_order]
+            elif player.fire_power and map_gen.obstacle_type[i] == "plant obstacle":
+                map_gen.riddle_order = [0 if x=="plant obstacle" else x for x in map_gen.riddle_order]
+            elif player.plant_power and map_gen.obstacle_type[i] == "water obstacle":
+                map_gen.riddle_order = [0 if x=="water obstacle" else x for x in map_gen.riddle_order]
+            else:
+                game_over = True
+                break
+
     if guard and current_portal_id == -1:
         guard = False
 
@@ -195,6 +210,11 @@ while not exit:
     if win:
         pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
         util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
+    
+    # if game over overlay with red and write game over text
+    if game_over:
+        pygame.draw.rect(canvas, (255, 0, 0), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
+        util.write_text(canvas, "Game Over!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
 
     pygame.display.update()
     clock.tick(30)

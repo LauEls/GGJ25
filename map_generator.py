@@ -26,6 +26,12 @@ class map_generator:
         finish_pos = self.get_map_pos(rows-2, cols-2)
         pygame.draw.rect(self.canvas, (0,255,0), pygame.Rect(finish_pos[0], finish_pos[1], self.cell_size, self.cell_size))
 
+        for i in range(4):
+            for j in range(33, self.cols):
+                self.map[j, i] = 0
+                # pos = self.get_map_pos(i, j)
+                # pygame.draw.rect(self.canvas, (0,0,0), pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+
         for i in range(self.rows):
             for j in range(self.cols):
                 if i == 0 or j == 0 or i == self.rows-1 or j == self.cols-1:

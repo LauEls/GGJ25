@@ -29,6 +29,9 @@ class SokobanMap:
     def __init__(self, canvas, map_id, window_height=1200, level=1):
         # self.map = []
         self.canvas = canvas
+        self.map_id = map_id
+        self.window_height = window_height
+        self.level = level
         self.load_map(map_id,level)
         self.player_pos = (1, 1)
         self.box_pos = []
@@ -38,6 +41,8 @@ class SokobanMap:
         self.tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size)
         self.tiles_small = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, self.cell_size//3*2)
 
+    def reset_map(self):
+        self.__init__(self.canvas, self.map_id, self.window_height, self.level)
 
     def load_map(self, map_id, level):
         # file_name = f"assets/worlds/w_10_3_{map_id}.txt"

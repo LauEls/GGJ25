@@ -12,7 +12,7 @@ from sokoban_puzzle import SokobanMap
 from player import Player
 
 def init_map():
-    global clock, exit, win, player, tiles, map_gen, guard, sokoban_maps
+    global clock, exit, win, player, tiles, map_gen, guard, sokoban_maps, start_ticks, time_budget
 
     canvas.fill((255, 0, 0))
   
@@ -59,6 +59,23 @@ def init_map():
     guard = False
     map_gen.build_the_wall()
 
+    start_ticks = pygame.time.get_ticks()
+    time_budget = 5*60
+
+def render_time():
+    util.write_text(canvas, f"Level: {level}", "white", "comic sans", 40, WINDOW_WIDTH-110, 25)
+    time_left = time_budget - (pygame.time.get_ticks() - start_ticks)//1000
+    time_left_min = time_left//60
+    time_left_sec = time_left-time_left_min*60
+    if time_left_sec < 10:
+        time_left_sec = f"0{time_left_sec}"
+    util.write_text(canvas, f"Time: {time_left_min}:{time_left_sec}", "white", "comic sans", 40, WINDOW_WIDTH-90, 65)
+
+def render_help_text():
+    # util.write_text(canvas, "WASD to move", "white", "comic sans", 20, WINDOW_WIDTH//2, WINDOW_HEIGHT-50)
+    util.write_text(canvas, "R to reset", "white", "comic sans", 40, 90, WINDOW_HEIGHT-50)
+    util.write_text(canvas, "ESC to exit", "white", "comic sans", 40, 95, WINDOW_HEIGHT-20)
+
 pygame.init() 
 
 state = 0
@@ -87,13 +104,18 @@ while not exit:
                     sokoban_maps[current_portal_id].move_player((-1, 0))
                 if event.key == pygame.K_d:
                     sokoban_maps[current_portal_id].move_player((1, 0))
+                if event.key == pygame.K_r:
+                    sokoban_maps[current_portal_id].reset_map()
 
         sokoban_maps[current_portal_id].render_map()
 
         if sokoban_maps[current_portal_id].box_cntr == 0:
             sokoban_maps[current_portal_id].finished = True
             state = 0
+            time_budget += 60
 
+        render_time()
+        render_help_text()
         pygame.display.update()
         clock.tick(30)
         continue
@@ -190,6 +212,9 @@ while not exit:
     if guard and current_portal_id == -1:
         guard = False
 
+    render_time()
+
+
     # if win overlay with gray and write win text
     if win:
         level += 1
@@ -197,7 +222,7 @@ while not exit:
             pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
             util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
             pygame.display.update()
-            time.sleep(3)
+            pygame.time.wait(3000)
             init_map()
         else:
             pygame.draw.rect(canvas, (100, 100, 100), pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))

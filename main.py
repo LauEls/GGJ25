@@ -64,11 +64,16 @@ def init_map():
 
 
     start_ticks = pygame.time.get_ticks()
-    time_budget = 5*60
+    time_budget = 10#5*60
 
 def render_time():
+    global game_over, state
     util.write_text(canvas, f"Level: {level}", "white", "comic sans", 40, WINDOW_WIDTH-110, 25)
     time_left = time_budget - (pygame.time.get_ticks() - start_ticks)//1000
+    if time_left <= 0:
+        time_left = 0
+        game_over = True
+        state = 0
     time_left_min = time_left//60
     time_left_sec = time_left-time_left_min*60
     if time_left_sec < 10:
@@ -148,13 +153,13 @@ def main_menu(clock, canvas, selection_sound, map_gen):
 
         
         # bubble is a sequence of tiles in an image with 16x16 size
-        character_idle = pygame.image.load("assets/character/spr_blob.png")
+        # character_idle = pygame.image.load("assets/character/spr_blob.png")
         # split into the 2 sprites for the animation
-        character_idle_sprites = []
-        for i in range(6):
-            character_idle_sprites.append(pygame.transform.scale(character_idle.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*1.3), int(CELL_SIZE*1.3))))
+        # character_idle_sprites = []
+        # for i in range(6):
+        #     character_idle_sprites.append(pygame.transform.scale(character_idle.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*1.3), int(CELL_SIZE*1.3))))
         # draw torch as an animated sprite
-        canvas.blit(character_idle_sprites[(pygame.time.get_ticks())//600 % len(character_idle_sprites)], (WINDOW_WIDTH//2-CELL_SIZE+12, 512))
+        # canvas.blit(character_idle_sprites[(pygame.time.get_ticks())//600 % len(character_idle_sprites)], (WINDOW_WIDTH//2-CELL_SIZE+12, 512))
 
         # bubble is a sequence of tiles in an image with 16x16 size
         bubble_idle = pygame.image.load("assets/bubble_idle.png")
@@ -438,7 +443,7 @@ while not exit:
     # if game over overlay with red and write game over text
     if game_over:
         pygame.draw.rect(canvas, BLACK, pygame.Rect(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT))
-        game_over_image = pygame.image.load('assets\game_over.jpg')
+        game_over_image = pygame.image.load('assets/game_over.jpg')
         game_over_image_rect = game_over_image.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
         canvas.blit(game_over_image, game_over_image_rect)
         util.write_text(canvas, "I need to find a way to shield myself and overcome these obstacles...", WHITE, "comic sans", 24, WINDOW_WIDTH // 2, game_over_image_rect.bottom + 30)
@@ -450,6 +455,7 @@ while not exit:
                 win = False
                 level = 1
                 init_map()
+                continue
                 # reset the game, hard code back to level 1, there should be a init function
         # on escape exit the game
         if event.type == pygame.KEYDOWN:

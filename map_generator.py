@@ -413,6 +413,7 @@ class map_generator:
     def draw_portals_and_obstacles(self):
         self.portal_pos = []
         self.obstacle_pos = []
+        self.portals = []
 
         for row_index, row in enumerate(self.spawn_rows):
             riddle_item = self.riddle_order[row_index]
@@ -428,6 +429,7 @@ class map_generator:
                     if self.map[col, row] >= 249:  # Floor tile
                         self.draw_portals(col, row)
                         self.portal_pos.append((col, row))
+                        self.portals.append(riddle_item)
                         break  # Only place one portal per row
 
         return self.portal_pos, self.obstacle_pos

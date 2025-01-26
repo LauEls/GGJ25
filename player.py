@@ -18,6 +18,11 @@ class Player:
         self.y = y
         self.discover()
 
+        # powers gained
+        self.water_power = False
+        self.fire_power = False
+        self.plant_power = False
+
     def move(self, dx, dy):
         # check if move is valid i.e. target not a wall
         for tile in self.known_tiles:

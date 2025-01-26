@@ -40,12 +40,12 @@ if VERBOSE:
 player = Player(1, 1, map_gen.map)
 tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28)
 
-sokoban_maps = []
-for i in range(3):
-    sokoban_maps.append(SokobanMap(canvas, i+1))
-
 # Generate portals and obstacles
 map_gen.add_portals_and_obstacles(3)
+
+sokoban_maps = []
+for i in range(3):
+    sokoban_maps.append(SokobanMap(canvas, i+1, map_gen.portals[i]))
 
 map_gen.draw_map()
 map_gen.build_the_wall()
@@ -73,6 +73,12 @@ while not exit:
             print("You win!")
             sokoban_maps[current_portal_id].finished = True
             state = 0
+            if sokoban_maps[current_portal_id].portal_type == "fire portal":
+                player.fire_power = True
+            elif sokoban_maps[current_portal_id].portal_type == "plant portal":
+                player.plant_power = True
+            elif sokoban_maps[current_portal_id].portal_type == "water portal":
+                player.water_power = True
 
         pygame.display.update()
         clock.tick(30)

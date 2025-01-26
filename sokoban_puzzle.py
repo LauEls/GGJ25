@@ -22,7 +22,7 @@ PLAYER_COLOR = (0, 0, 255)
 EMPTY_COLOR = (255, 255, 255)
 
 class SokobanMap:
-    def __init__(self, canvas, map_id, window_height=1200):
+    def __init__(self, canvas, map_id, type, window_height=1200):
         # self.map = []
         self.canvas = canvas
         self.load_map(map_id)
@@ -30,6 +30,7 @@ class SokobanMap:
         self.cells = len(self.map)
         self.cell_size = int(window_height / self.cells)
         self.finished = False
+        self.type = type
 
 
     def load_map(self, map_id):

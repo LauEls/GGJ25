@@ -31,7 +31,7 @@ map_gen.build_the_wall()
 if VERBOSE:
     print("starting random walk")
 cells_drawn = map_gen.random_walk()
-map_gen.add_portals(3)
+
 if VERBOSE:
     print("finished random walk")
     print("filling empty cells")
@@ -46,14 +46,13 @@ tiles = Tileset("assets/tiles/set_1.png", 16, 16, 20, 28, CELL_SIZE)
 # Generate portals and obstacles
 map_gen.add_portals_and_obstacles(3)
 
-
+# Generate sokoban maps
 sokoban_maps = []
 for i in range(3):
-    sokoban_maps.append(SokobanMap(canvas, i+1, map_gen.portals[i], WINDOW_HEIGHT))
+    sokoban_maps.append(SokobanMap(canvas, i+1, map_gen.portals_in_game[i], WINDOW_HEIGHT))
 
 
 guard = False
-map_gen.build_the_wall()
 
 while not exit: 
     if state == 1:
@@ -82,10 +81,13 @@ while not exit:
             state = 0
             if sokoban_maps[current_portal_id].portal_type == "fire portal":
                 player.fire_power = True
+                print("fire power gained")
             elif sokoban_maps[current_portal_id].portal_type == "plant portal":
                 player.plant_power = True
+                print("plant power gained")
             elif sokoban_maps[current_portal_id].portal_type == "water portal":
                 player.water_power = True
+                print("water power gained")
 
         pygame.display.update()
         clock.tick(30)

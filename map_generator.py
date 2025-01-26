@@ -376,17 +376,21 @@ class map_generator:
 
         portals = PORTALS[: riddle_no]
         obstacles = OBSTACLES[: riddle_no]
+        self.portals_in_game = []
 
         self.riddle_order = []
         first_portal = random.choice(portals)
         self.riddle_order.append(first_portal)
+        self.portals_in_game.append(first_portal)
         portals.remove(first_portal)
+
 
         for i in range(total_count - 1):
             choose_portal = random.choice([True,False])
             if choose_portal and portals:
                 portal = random.choice(portals)
                 self.riddle_order.append(portal)
+                self.portals_in_game.append(portal)
                 portals.remove(portal)
             elif not choose_portal and obstacles:
                 # Ensure the obstacle chosen has its corresponding portal already in riddle_order
@@ -398,21 +402,22 @@ class map_generator:
                 else:
                     portal = random.choice(portals)
                     self.riddle_order.append(portal)
+                    self.portals_in_game.append(portal)
                     portals.remove(portal)
             else:
                 thing = random.choice(portals + obstacles)
                 self.riddle_order.append(thing)
                 if thing in portals:
                     portals.remove(thing)
+                    self.portals_in_game.append(thing)
                 else:
                     obstacles.remove(thing)
-
-        print(self.riddle_order)
+        
+        
 
     def draw_portals_and_obstacles(self):
         self.portal_pos = []
         self.obstacle_pos = []
-        self.portals = []
 
         for row_index, row in enumerate(self.spawn_rows):
             riddle_item = self.riddle_order[row_index]
@@ -428,7 +433,6 @@ class map_generator:
                     if self.map[col, row] >= 249:  # Floor tile
                         self.draw_portals(col, row)
                         self.portal_pos.append((col, row))
-                        self.portals.append(riddle_item)
                         break  # Only place one portal per row
 
         return self.portal_pos, self.obstacle_pos

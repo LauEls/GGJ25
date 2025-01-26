@@ -26,7 +26,7 @@ MAX_PLAN_STEPS = 10
 FLOOR_TILES = [[8,12],[9,12],[10,12],[8,13],[9,13],[10,13]]
 START_TILE = [11, 11]
 FINISH_TILE = [16, 11]
-PORTAL_TILE = [2, 12]
+PORTAL_TILE = [3, 11]
 BOX_TILE = [2, 12]
 GOAL_TILE = [19, 8]
 BOX_ON_GOAL_TILE = [21, 8]
@@ -51,3 +51,13 @@ WALL = {
     "wall bottom left top floor right":  [7, 8],
     "wall bottom right top floor left":  [5, 8],
 }
+
+# Types
+OBSTACLES = ["fire obstacle", "water obstacle", "plant obstacle"]
+PORTALS = ["water portal", "plant portal", "fire portal"]
+OBSTACLE_TO_PORTAL = {obstacle: portal for portal, obstacle in zip(PORTALS, OBSTACLES)}
+
+water_tile_path = 'assets/water_obstacle.png'
+fire_tile_path = 'assets/fire_obstacle.png'
+plant_tile_path = 'assets/plant_obstacle.png'
+portal_tile_path = 'assets/portal.png'

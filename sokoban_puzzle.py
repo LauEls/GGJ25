@@ -68,6 +68,7 @@ class SokobanMap:
         self.canvas.fill((0, 0, 0))
         self.box_pos = []
         self.box_on_goal_cntr = 0
+        
         for y, row in enumerate(self.map):
             for x, col in enumerate(row):
                 pos = self.get_map_pos(x, y)

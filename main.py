@@ -46,10 +46,16 @@ sokoban_maps = []
 for i in range(3):
     sokoban_maps.append(SokobanMap(canvas, i+1, WINDOW_HEIGHT))
 
+sokoban_maps = []
+for i in range(3):
+    sokoban_maps.append(SokobanMap(canvas, i+1))
+
+# Generate portals and obstacles
+map_gen.add_portals_and_obstacles(3)
+
 
 guard = False
 map_gen.build_the_wall()
-map_gen.draw_map()
 
 while not exit: 
     if state == 1:
@@ -103,15 +109,14 @@ while not exit:
     canvas.fill((59, 59, 59))
 
     # draw the known player tiles
-    for tile in player.known_tiles:
-        pos = map_gen.get_map_pos(tile.x, tile.y)
-        canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
-
-    # # draw full map
-    # for i in range(MAP_SIZE):
-    #     for j in range(MAP_SIZE):
-    #         pos = map_gen.get_map_pos(i, j)
-    #         canvas.blit(tiles.type_to_tile(map_gen.map[i][j]), pos)
+    # for tile in player.known_tiles:
+    #     pos = map_gen.get_map_pos(tile.x, tile.y)
+    #     canvas.blit(tiles.type_to_tile(map_gen.map[tile.x][tile.y]), pos)
+    
+    for x in range(MAP_SIZE):
+        for y in range(MAP_SIZE):
+            pos = map_gen.get_map_pos(x, y)
+            canvas.blit(tiles.type_to_tile(map_gen.map[x][y]), pos)
 
 
     # overlay with dark mist
@@ -155,6 +160,9 @@ while not exit:
     # starting tile
     start_pos = map_gen.get_map_pos(1, 1)
     canvas.blit(tiles.type_to_tile(247), start_pos)
+
+    # draw portals and obstacles
+    map_gen.draw_portals_and_obstacles()
 
     # draw player as red circle
     player_pos = map_gen.get_map_pos(player.x, player.y)

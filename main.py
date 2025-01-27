@@ -68,7 +68,7 @@ def init_map():
 
     pygame.mixer.music.stop()
     # play selection sound once without looop
-    selection_sound.play()
+    # selection_sound.play()
 
     pygame.mixer.music.load('assets/sounds/level.mp3')
     pygame.mixer.music.play(-1)
@@ -172,6 +172,7 @@ def main_menu(clock, canvas, selection_sound, map_gen):
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RETURN:
                     starting_game = True
+                    selection_sound.play()
 
         canvas.fill((59, 59, 59))
 
@@ -244,6 +245,7 @@ def main_menu(clock, canvas, selection_sound, map_gen):
         util.write_text(canvas, "a", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF)
         util.write_text(canvas, "d", "white", "comic sans", 20, WINDOW_WIDTH//2+CELL_SIZE*3, WINDOW_HEIGHT//2+VERTICAL_CONTROL_OFF)
 
+        
         pygame.display.update()
         clock.tick(30)
 
@@ -282,8 +284,9 @@ while not exit:
                 if event.key == pygame.K_ESCAPE:
                     state = 0
                     guard = True
-                    transition_exit_sound_timer = 2000
-                    transition_exit_sound.play()
+                    # transition_exit_sound_timer = 2000
+                    # transition_exit_sound.play()
+                    transition_sound.play()
                     transition_sound_timer = 2000
                 if event.key == pygame.K_w:
                     if walking_sound_timer == 0:
@@ -313,6 +316,8 @@ while not exit:
         if sokoban_maps[current_portal_id].box_cntr == 0:
             sokoban_maps[current_portal_id].finished = True
             state = 0
+            transition_sound.play()
+            transition_sound_timer = 2000
             if sokoban_maps[current_portal_id].portal_type == "fire portal":
                 player.fire_power = True
                 player.water_power = False
@@ -429,11 +434,12 @@ while not exit:
         current_portal_id = -1
         if portal[0] == player.x and portal[1] == player.y:
             current_portal_id = i
-            # play selection sound once
-            transition_sound.play()
             if VERBOSE:
                 print("entering portal", i)
             if not sokoban_maps[current_portal_id].finished and not guard:
+                # play selection sound once
+                transition_sound.play()
+                transition_sound_timer = 2000
                 state = 1
             break
 
@@ -464,7 +470,11 @@ while not exit:
             util.write_text(canvas, "Level Completed!", "white", "comic sans", 50, WINDOW_WIDTH//2, WINDOW_HEIGHT//2)
             util.write_text(canvas, "Brace yourself for the next challenge!", "white", "comic sans", 20, WINDOW_WIDTH//2, WINDOW_HEIGHT//2 + 50)
             pygame.display.update()
-            pygame.time.wait(3000)
+            pygame.mixer.music.stop()
+            vicotry_sound.play()
+            pygame.time.wait(4500)
+            vicotry_sound.stop()
+            pygame.time.wait(500)
             init_map()
             continue
         else:

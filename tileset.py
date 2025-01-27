@@ -64,6 +64,15 @@ class Tileset:
                 return self.get_tile(WALL["wall bottom left top floor right"][0], WALL["wall bottom left top floor right"][1])
             case 16:
                 return self.get_tile(WALL["wall bottom right top floor left"][0], WALL["wall bottom right top floor left"][1])
+            # 20 is controls
+            case 20:
+                return self.get_tile(UP_TILE[0], UP_TILE[1])
+            case 21:
+                return self.get_tile(DOWN_TILE[0], DOWN_TILE[1])
+            case 22:
+                return self.get_tile(LEFT_TILE[0], LEFT_TILE[1])
+            case 23:
+                return self.get_tile(RIGHT_TILE[0], RIGHT_TILE[1])
             # floor tiles and specials
             case 243: # sokoban box on goal tile
                 return self.get_tile(BOX_ON_GOAL_TILE[0], BOX_ON_GOAL_TILE[1])

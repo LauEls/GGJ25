@@ -26,6 +26,12 @@ class map_generator:
         finish_pos = self.get_map_pos(rows-2, cols-2)
         pygame.draw.rect(self.canvas, (0,255,0), pygame.Rect(finish_pos[0], finish_pos[1], self.cell_size, self.cell_size))
 
+        for i in range(4):
+            for j in range(33, self.cols):
+                self.map[j, i] = 0
+                # pos = self.get_map_pos(i, j)
+                # pygame.draw.rect(self.canvas, (0,0,0), pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
+
         for i in range(self.rows):
             for j in range(self.cols):
                 if i == 0 or j == 0 or i == self.rows-1 or j == self.cols-1:
@@ -376,17 +382,21 @@ class map_generator:
 
         portals = PORTALS[: riddle_no]
         obstacles = OBSTACLES[: riddle_no]
+        self.portals_in_game = []
 
         self.riddle_order = []
         first_portal = random.choice(portals)
         self.riddle_order.append(first_portal)
+        self.portals_in_game.append(first_portal)
         portals.remove(first_portal)
+
 
         for i in range(total_count - 1):
             choose_portal = random.choice([True,False])
             if choose_portal and portals:
                 portal = random.choice(portals)
                 self.riddle_order.append(portal)
+                self.portals_in_game.append(portal)
                 portals.remove(portal)
             elif not choose_portal and obstacles:
                 # Ensure the obstacle chosen has its corresponding portal already in riddle_order
@@ -398,36 +408,63 @@ class map_generator:
                 else:
                     portal = random.choice(portals)
                     self.riddle_order.append(portal)
+                    self.portals_in_game.append(portal)
                     portals.remove(portal)
             else:
                 thing = random.choice(portals + obstacles)
                 self.riddle_order.append(thing)
                 if thing in portals:
                     portals.remove(thing)
+                    self.portals_in_game.append(thing)
                 else:
                     obstacles.remove(thing)
+        
+        
 
-        print(self.riddle_order)
+    def draw_portals_and_obstacles(self, known_tiles):
+        """
+        Draw portals and obstacles on the map
 
-    def draw_portals_and_obstacles(self):
+        Parameters:
+        known_tiles (list): List of tiles the player has discovered
+        """
+
         self.portal_pos = []
         self.obstacle_pos = []
+        self.obstacle_type = []
 
         for row_index, row in enumerate(self.spawn_rows):
             riddle_item = self.riddle_order[row_index]
-            if riddle_item in OBSTACLES:
+            if riddle_item in OBSTACLES :
                 # Populate map row with portals or obstacles
                 for col in range(1, self.cols - 1):  # Skip the borders
                     if self.map[col, row] >= 249:  # Floor tile
-                        self.draw_obstacles(col, row, riddle_item)
-                        self.obstacle_pos.append((col, row, riddle_item))
-            else:
+                        # check if tile in player known tiles
+                        known_tile = False
+                        for tile in known_tiles:
+                            if tile.x == col and tile.y == row:
+                                known_tile = True
+                                break
+                        if known_tile:
+                            self.draw_obstacles(col, row, riddle_item)
+                            self.obstacle_pos.append((col, row, riddle_item))
+                            self.obstacle_type.append(riddle_item)
+                            
+            elif riddle_item in PORTALS:
                 # Populate map with one portal per row at the smallest col number which is a floor tile
                 for col in range(1, self.cols - 1):  # Skip the borders
                     if self.map[col, row] >= 249:  # Floor tile
-                        self.draw_portals(col, row)
-                        self.portal_pos.append((col, row))
-                        break  # Only place one portal per row
+                         # check if tile in player known tiles
+                        known_tile = False
+                        for tile in known_tiles:
+                            if tile.x == col and tile.y == row:
+                                known_tile = True
+                                break
+                        if known_tile:
+                            self.draw_portals(col, row)
+                            self.portal_pos.append((col, row))
+                            break  # Only place one portal per row     
+    
 
         return self.portal_pos, self.obstacle_pos
 

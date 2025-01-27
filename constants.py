@@ -57,7 +57,21 @@ OBSTACLES = ["fire obstacle", "water obstacle", "plant obstacle"]
 PORTALS = ["water portal", "plant portal", "fire portal"]
 OBSTACLE_TO_PORTAL = {obstacle: portal for portal, obstacle in zip(PORTALS, OBSTACLES)}
 
+UP_TILE = [2, 1]
+LEFT_TILE = [2, 2]
+RIGHT_TILE = [2, 3]
+DOWN_TILE = [2, 4]
+
 water_tile_path = 'assets/water_obstacle.png'
 fire_tile_path = 'assets/fire_obstacle.png'
 plant_tile_path = 'assets/plant_obstacle.png'
 portal_tile_path = 'assets/portal.png'
+
+# Credits
+
+credits = [
+    "Programming: Laurenz, Lukas and Raquel",
+    "Art & Animation: Raquel and Lukas",
+    "Music: Guillaume",
+    "Special Thanks: Our amazing players!"
+]

@@ -67,7 +67,8 @@ class SokobanMap:
         
 
     def reset_map(self):
-        self.__init__(self.canvas, self.map_id, self.window_height, self.level)
+        # self.__init__(self.canvas, self.map_id, self.window_height, self.level)
+        self.load_map(self.map_id, self.level)
 
     def load_map(self, map_id, level):
         # file_name = f"assets/worlds/w_10_3_{map_id}.txt"

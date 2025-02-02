@@ -58,7 +58,7 @@ class SokobanMap:
         for i in range(3):
             self.character_die_sprites.append(pygame.transform.scale(self.character_die.subsurface((i*16, 0, 16, 16)), (int(self.cell_size*0.8), int(self.cell_size*0.8))))
 
-        self.character_bubble = pygame.image.load("assets/bubble_idle.png")
+        self.character_bubble = pygame.image.load("assets/bubbles/bubble_idle.png")
         # split into the 2 sprites for the animation
         self.character_bubble_sprites = []
         for i in range(2):

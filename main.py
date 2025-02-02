@@ -131,7 +131,7 @@ character_die_sprites = []
 for i in range(3):
     character_die_sprites.append(pygame.transform.scale(character_die.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
 
-character_bubble = pygame.image.load("assets/bubble_idle.png")
+character_bubble = pygame.image.load("assets/bubbles/bubble_idle.png")
 # split into the 2 sprites for the animation
 character_bubble_sprites = []
 for i in range(2):
@@ -155,7 +155,7 @@ character_die_sprites = []
 for i in range(3):
     character_die_sprites.append(pygame.transform.scale(character_die.subsurface((i*16, 0, 16, 16)), (int(CELL_SIZE*0.8), int(CELL_SIZE*0.8))))
 
-character_bubble = pygame.image.load("assets/bubble_idle.png")
+character_bubble = pygame.image.load("assets/bubbles/bubble_idle.png")
 # split into the 2 sprites for the animation
 character_bubble_sprites = []
 for i in range(2):
@@ -221,7 +221,7 @@ def main_menu(clock, canvas, selection_sound, map_gen):
         canvas.blit(character_run_sprites[(pygame.time.get_ticks())//300 % len(character_run_sprites)], (WINDOW_WIDTH//2-CELL_SIZE+12, 512))
 
         # bubble is a sequence of tiles in an image with 16x16 size
-        bubble_idle = pygame.image.load("assets/bubble_idle.png")
+        bubble_idle = pygame.image.load("assets/bubbles/bubble_idle.png")
         # split into the 2 sprites for the animation
         bubble_idle_sprites = []
         for i in range(2):

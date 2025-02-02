@@ -64,6 +64,12 @@ class SokobanMap:
         for i in range(2):
             self.character_bubble_sprites.append(pygame.transform.scale(self.character_bubble.subsurface((i*16, 0, 16, 16)), (self.cell_size, self.cell_size)))
 
+        self.fire_power = pygame.image.load("assets/fire_power.png")
+        self.fire_power = pygame.transform.scale(self.fire_power, (self.cell_size//2, self.cell_size//2))
+        self.water_power = pygame.image.load("assets/water_power.png")
+        self.water_power = pygame.transform.scale(self.water_power, (self.cell_size//2, self.cell_size//2))
+        self.plant_power = pygame.image.load("assets/plant_power.png")
+        self.plant_power = pygame.transform.scale(self.plant_power, (self.cell_size//2, self.cell_size//2))
         
 
     def reset_map(self):
@@ -99,12 +105,12 @@ class SokobanMap:
         return (x*self.cell_size, y*self.cell_size)
 
     def render_map(self):
-        if self.portal_type == "fire portal":
-            self.canvas.fill((255, 0, 0))
-        elif self.portal_type == "plant portal":
-            self.canvas.fill((0, 255, 0))
-        elif self.portal_type == "water portal":
-            self.canvas.fill((0, 0, 255))
+        # if self.portal_type == "fire portal":
+        #     self.canvas.fill((255, 0, 0))
+        # elif self.portal_type == "plant portal":
+        #     self.canvas.fill((0, 255, 0))
+        # elif self.portal_type == "water portal":
+        #     self.canvas.fill((0, 0, 255))
         self.box_pos = []
         # self.box_on_goal_cntr = 0
         self.box_cntr = 0
@@ -112,6 +118,7 @@ class SokobanMap:
             for x, col in enumerate(row):
                 pos = self.get_map_pos(x, y)
                 pos_small = (pos[0]+self.cell_size//6, pos[1]+self.cell_size//6)
+                pos_power = (pos[0]+self.cell_size//4, pos[1]+self.cell_size//9-2)
                 if col == WALL:
                     self.canvas.blit(self.tiles.type_to_tile(0), pos)
                     # self.tile_map[y][x] = 1
@@ -119,14 +126,28 @@ class SokobanMap:
                 elif col == BOX:
                     self.canvas.blit(self.tiles.type_to_tile(254), pos)
                     self.canvas.blit(self.tiles_small.type_to_tile(245), pos_small)
+                    
                     self.box_cntr += 1
                     # pygame.draw.rect(self.canvas, BOX_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                     # self.box_pos.append((x, y))
                 elif col == GOAL:
                     self.canvas.blit(self.tiles.type_to_tile(244), pos)
+                    if self.portal_type == "fire portal":
+                        self.canvas.blit(self.fire_power, pos_power)
+                    elif self.portal_type == "plant portal":
+                        self.canvas.blit(self.plant_power, pos_power)
+                    elif self.portal_type == "water portal":
+                        self.canvas.blit(self.water_power, pos_power)
+                    
                     # pygame.draw.rect(self.canvas, GOAL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                 elif col == BOX_ON_GOAL:
                     self.canvas.blit(self.tiles.type_to_tile(243), pos)
+                    # if self.portal_type == "fire portal":
+                    #     self.canvas.blit(self.fire_power, pos_power)
+                    # elif self.portal_type == "plant portal":
+                    #     self.canvas.blit(self.plant_power, pos_power)
+                    # elif self.portal_type == "water portal":
+                    #     self.canvas.blit(self.water_power, pos_power)
                     self.canvas.blit(self.tiles_small.type_to_tile(245), pos_small)
                     # pygame.draw.rect(self.canvas, BOX_ON_GOAL_COLOR, pygame.Rect(pos[0], pos[1], self.cell_size, self.cell_size))
                     # self.box_pos.append((x, y))
